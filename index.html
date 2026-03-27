@@ -1155,6 +1155,8 @@ function renderSavedList() {
         item.addEventListener('click', e => {
             if (e.target.closest('.saved-item-del')) return;
             loadSavedLocation(loc);
+            document.getElementById('saved-toggle').classList.remove('open');
+            document.getElementById('saved-list').classList.remove('open');
         });
         item.querySelector('.saved-item-del').addEventListener('click', e => {
             e.stopPropagation();
