@@ -137,15 +137,25 @@
         #loc-elev { font-size: 11px; color: var(--accent); font-weight: 600; }
 
         /* ── Fetch Button ── */
-        #fetch-btn {
-            display: block; width: calc(100% - 24px); margin: 10px 12px;
-            background: var(--accent); color: #0d1117;
-            border: none; padding: 13px; border-radius: 10px;
-            font-size: 16px; font-weight: 700; cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            transition: opacity .15s;
+        #btn-row {
+            display: flex; gap: 8px;
+            margin: 10px 12px;
         }
-        #fetch-btn:disabled { opacity: .45; cursor: default; }
+        #fetch-btn, #fetch-10-btn {
+            flex: 1;
+            border: none; padding: 13px 6px; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: opacity .15s; text-align: center;
+        }
+        #fetch-btn {
+            background: var(--accent); color: #0d1117;
+        }
+        #fetch-10-btn {
+            background: var(--surface2); color: var(--accent);
+            border: 1.5px solid var(--accent);
+        }
+        #fetch-btn:disabled, #fetch-10-btn:disabled { opacity: .45; cursor: default; }
 
         /* ── Status ── */
         #loading {
@@ -520,7 +530,10 @@
     </div>
 </div>
 
-<button id="fetch-btn" disabled>Get 7-Day Shooting Forecast</button>
+<div id="btn-row">
+    <button id="fetch-btn" disabled>Get 7-Day Forecast</button>
+    <button id="fetch-10-btn" disabled>Get 10-Day Forecast</button>
+</div>
 
 <div id="loading">
     <div class="spinner"></div>
@@ -599,6 +612,7 @@ let satelliteActive = false;
 // ═══════════════════════════════════════════
 function buildForecastChips() {
     const h = wxData.hourly;
+    const numDays = new Set(h.time.map(t => t.substring(0, 10))).size;
     let hasThunder = false, hasHighWind = false, hasHeavyRain = false,
         hasRain = false, hasSnow = false, hasFreeze = false,
         hasCold = false, hasFog = false, hasHeat = false, hasModWind = false;
@@ -644,7 +658,7 @@ function buildForecastChips() {
     if (hasHeat)      chips.push({ cls:'warn',   icon:'🌡️', text:'Extreme Heat — Sun Protection' });
     if (hasModWind)   chips.push({ cls:'muted',  icon:'💨', text:'Moderate Winds' });
     // All clear
-    if (chips.length === 0) chips.push({ cls:'good', icon:'✅', text:'Clear Conditions — 7 Days' });
+    if (chips.length === 0) chips.push({ cls:'good', icon:'✅', text:`Clear Conditions — ${numDays} Days` });
 
     const el = document.getElementById('forecast-chips');
     el.innerHTML = chips.map(c =>
@@ -693,7 +707,8 @@ async function setLocation(lat, lon, label) {
     document.getElementById('loc-detail').textContent =
         `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
     document.getElementById('loc-bar').style.display = 'flex';
-    document.getElementById('fetch-btn').disabled = false;
+    document.getElementById('fetch-btn').disabled    = false;
+    document.getElementById('fetch-10-btn').disabled = false;
 
     // Reverse geocode
     if (!label) {
@@ -761,16 +776,18 @@ document.getElementById('locate-btn').addEventListener('click', () => {
 // ═══════════════════════════════════════════
 //  FETCH WEATHER
 // ═══════════════════════════════════════════
-document.getElementById('fetch-btn').addEventListener('click', fetchWeather);
+document.getElementById('fetch-btn').addEventListener('click',    () => fetchWeather(7));
+document.getElementById('fetch-10-btn').addEventListener('click', () => fetchWeather(10));
 
-async function fetchWeather() {
+async function fetchWeather(days = 7) {
     if (!selLat) return;
-    const btn   = document.getElementById('fetch-btn');
+    const btn7  = document.getElementById('fetch-btn');
+    const btn10 = document.getElementById('fetch-10-btn');
     const load  = document.getElementById('loading');
     const err   = document.getElementById('error-msg');
     const wrap  = document.getElementById('forecast-wrap');
 
-    btn.disabled = true;
+    btn7.disabled = btn10.disabled = true;
     load.style.display = 'block';
     err.style.display = 'none';
     wrap.style.display = 'none';
@@ -780,7 +797,7 @@ async function fetchWeather() {
     const startDateStr = document.getElementById('start-date').value || todayISO();
     const startDt = new Date(startDateStr + 'T00:00:00');
     const endDt   = new Date(startDt);
-    endDt.setDate(endDt.getDate() + 6);
+    endDt.setDate(endDt.getDate() + (days - 1));
     const endDateStr = endDt.toISOString().substring(0, 10);
 
     const params = new URLSearchParams({
@@ -815,7 +832,7 @@ async function fetchWeather() {
         err.style.display = 'block';
     } finally {
         load.style.display = 'none';
-        btn.disabled = false;
+        btn7.disabled = btn10.disabled = false;
     }
 }
 
@@ -1222,23 +1239,24 @@ function todayISO() {
 (function initDatePicker() {
     const input = document.getElementById('start-date');
     const hint  = document.getElementById('date-hint');
-    const btn   = document.getElementById('fetch-btn');
+    const btn7  = document.getElementById('fetch-btn');
+    const btn10 = document.getElementById('fetch-10-btn');
 
-    // Max = 9 days out so 7-day window stays within Open-Meteo's 16-day limit
+    // Max = 6 days out so a 10-day window stays within Open-Meteo's 16-day limit
     const maxDt = new Date();
-    maxDt.setDate(maxDt.getDate() + 9);
+    maxDt.setDate(maxDt.getDate() + 6);
 
     input.value = todayISO();
     input.min   = todayISO();
     input.max   = maxDt.toISOString().substring(0, 10);
 
     input.addEventListener('change', () => {
-        const val     = input.value;
-        const today   = todayISO();
+        const val   = input.value;
+        const today = todayISO();
         if (!val || val === today) {
             hint.textContent = 'Today';
-            if (!document.getElementById('fetch-btn').disabled)
-                btn.textContent = 'Get 7-Day Shooting Forecast';
+            if (!btn7.disabled)  btn7.textContent  = 'Get 7-Day Forecast';
+            if (!btn10.disabled) btn10.textContent = 'Get 10-Day Forecast';
             return;
         }
         const diffMs   = new Date(val + 'T00:00:00') - new Date(today + 'T00:00:00');
@@ -1247,8 +1265,8 @@ function todayISO() {
 
         const label = new Date(val + 'T12:00:00')
             .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        if (!document.getElementById('fetch-btn').disabled)
-            btn.textContent = `Get 7-Day Forecast from ${label}`;
+        if (!btn7.disabled)  btn7.textContent  = `7-Day from ${label}`;
+        if (!btn10.disabled) btn10.textContent = `10-Day from ${label}`;
     });
 })();
 
