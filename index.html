@@ -600,6 +600,7 @@
 let selLat = null, selLon = null, selElev = 0;
 let wxData = null;
 let selDay = 0;
+let lastForecastDays = 7;
 let mapMarker = null;
 
 // ═══════════════════════════════════════════
@@ -790,6 +791,7 @@ document.getElementById('fetch-10-btn').addEventListener('click', () => fetchWea
 
 async function fetchWeather(days = 7) {
     if (!selLat) return;
+    lastForecastDays = days;
     const btn7  = document.getElementById('fetch-btn');
     const btn10 = document.getElementById('fetch-10-btn');
     const load  = document.getElementById('loading');
@@ -1177,8 +1179,13 @@ function renderSavedList() {
 
 function loadSavedLocation(loc) {
     setLocation(loc.lat, loc.lon, loc.name);
-    // Scroll map into view on mobile
-    document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (wxData) {
+        // Re-run the forecast for the new location using the same date and duration
+        fetchWeather(lastForecastDays);
+    } else {
+        // No prior forecast — scroll map into view so user can interact
+        document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 }
 
 function deleteSaved(idx) {
