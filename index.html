@@ -374,6 +374,29 @@
         }
         #map-layer-btn:hover { border-color: var(--accent); }
 
+        /* ── Date picker row ── */
+        #date-row {
+            display: flex; align-items: center; gap: 10px;
+            margin: 8px 12px 0;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 9px 13px;
+        }
+        #date-row label {
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            white-space: nowrap; display: flex; align-items: center; gap: 6px;
+        }
+        #start-date {
+            flex: 1; background: var(--surface2); border: 1px solid var(--border);
+            color: var(--text); padding: 6px 10px; border-radius: 6px;
+            font-size: 14px; outline: none; -webkit-appearance: none;
+            color-scheme: dark; min-width: 0;
+        }
+        #start-date:focus { border-color: var(--accent); }
+        #date-hint {
+            font-size: 11px; color: var(--accent); white-space: nowrap;
+            font-weight: 600;
+        }
+
         /* Responsive: on very small screens hide lower-priority cols */
         @media (max-width: 380px) {
             .col-sky { display: none; }
@@ -433,6 +456,13 @@
     <div id="saved-list">
         <div id="saved-empty">No saved locations yet. Set a pin and tap <i class="bi bi-star"></i> Save.</div>
     </div>
+</div>
+
+<!-- DATE PICKER -->
+<div id="date-row">
+    <label for="start-date"><i class="bi bi-calendar3"></i> Start Date</label>
+    <input type="date" id="start-date">
+    <span id="date-hint">Today</span>
 </div>
 
 <button id="fetch-btn" disabled>Get 7-Day Shooting Forecast</button>
@@ -621,9 +651,15 @@ async function fetchWeather() {
     document.getElementById('day-tabs').innerHTML = '';
     selDay = 0;
 
+    const startDateStr = document.getElementById('start-date').value || todayISO();
+    const startDt = new Date(startDateStr + 'T00:00:00');
+    const endDt   = new Date(startDt);
+    endDt.setDate(endDt.getDate() + 6);
+    const endDateStr = endDt.toISOString().substring(0, 10);
+
     const params = new URLSearchParams({
-        latitude:  selLat,
-        longitude: selLon,
+        latitude:   selLat,
+        longitude:  selLon,
         hourly: [
             'temperature_2m', 'relative_humidity_2m', 'dew_point_2m',
             'apparent_temperature', 'precipitation_probability', 'precipitation',
@@ -632,11 +668,12 @@ async function fetchWeather() {
             'wind_direction_10m', 'wind_direction_80m',
             'wind_gusts_10m'
         ].join(','),
-        wind_speed_unit:     'mph',
-        temperature_unit:    'fahrenheit',
-        precipitation_unit:  'inch',
-        timezone:            'auto',
-        forecast_days:       7
+        wind_speed_unit:    'mph',
+        temperature_unit:   'fahrenheit',
+        precipitation_unit: 'inch',
+        timezone:           'auto',
+        start_date:         startDateStr,
+        end_date:           endDateStr
     });
 
     try {
@@ -671,11 +708,16 @@ function renderForecast() {
     // Tabs
     const tabsEl = document.getElementById('day-tabs');
     tabsEl.innerHTML = '';
+    const today    = todayISO();
+    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowISO = tomorrow.toISOString().substring(0, 10);
+
     dayKeys.forEach((dk, idx) => {
         const d = new Date(dk + 'T12:00:00');
-        const lbl = idx === 0 ? 'Today' :
-                    idx === 1 ? 'Tomorrow' :
-                    d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        const fullLbl = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        const lbl = dk === today     ? 'Today' :
+                    dk === tomorrowISO ? 'Tomorrow' :
+                    fullLbl;
         const tab = document.createElement('div');
         tab.className = 'day-tab' + (idx === 0 ? ' active' : '');
         tab.textContent = lbl;
@@ -1043,6 +1085,44 @@ document.getElementById('save-loc-btn').addEventListener('click', saveCurrentLoc
 
 // Initial render
 renderSavedList();
+
+// ── Date picker ──
+function todayISO() {
+    return new Date().toISOString().substring(0, 10);
+}
+
+(function initDatePicker() {
+    const input = document.getElementById('start-date');
+    const hint  = document.getElementById('date-hint');
+    const btn   = document.getElementById('fetch-btn');
+
+    // Max = 9 days out so 7-day window stays within Open-Meteo's 16-day limit
+    const maxDt = new Date();
+    maxDt.setDate(maxDt.getDate() + 9);
+
+    input.value = todayISO();
+    input.min   = todayISO();
+    input.max   = maxDt.toISOString().substring(0, 10);
+
+    input.addEventListener('change', () => {
+        const val     = input.value;
+        const today   = todayISO();
+        if (!val || val === today) {
+            hint.textContent = 'Today';
+            if (!document.getElementById('fetch-btn').disabled)
+                btn.textContent = 'Get 7-Day Shooting Forecast';
+            return;
+        }
+        const diffMs   = new Date(val + 'T00:00:00') - new Date(today + 'T00:00:00');
+        const diffDays = Math.round(diffMs / 86400000);
+        hint.textContent = `+${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+
+        const label = new Date(val + 'T12:00:00')
+            .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        if (!document.getElementById('fetch-btn').disabled)
+            btn.textContent = `Get 7-Day Forecast from ${label}`;
+    });
+})();
 
 // ── Attribution popup ──
 function toggleAttribution(e) {
