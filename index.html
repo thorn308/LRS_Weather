@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LRS Weather</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
             --bg:       #0d1117;
@@ -246,6 +247,36 @@
         /* Mirage indicator */
         .mirage { font-size: 10px; color: #e3b341; }
 
+        /* ── Attribution popup ── */
+        #attribution-btn {
+            font-size: 11px; color: var(--muted); text-align: right;
+            cursor: pointer; position: relative; user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #attribution-btn:hover { color: var(--accent); }
+        #attribution-btn span { color: var(--accent); }
+        #attribution-popup {
+            display: none;
+            position: absolute; right: 0; top: calc(100% + 6px);
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 12px 14px;
+            min-width: 230px; z-index: 3000;
+            box-shadow: 0 4px 20px rgba(0,0,0,.6);
+            text-align: left;
+        }
+        #attribution-popup.open { display: block; }
+        .attr-title {
+            font-size: 11px; font-weight: 700; color: var(--text);
+            text-transform: uppercase; letter-spacing: .5px; margin-bottom: 9px;
+        }
+        .attr-row {
+            font-size: 11px; color: var(--muted); margin-bottom: 6px;
+            display: flex; align-items: center; gap: 7px;
+        }
+        .attr-row:last-child { margin-bottom: 0; }
+        .attr-row i { color: var(--accent); font-size: 13px; flex-shrink: 0; width: 14px; text-align: center; }
+        .attr-row strong { color: var(--text); }
+
         /* ── Saved Locations ── */
         #save-loc-btn {
             background: none; border: 1px solid var(--border);
@@ -347,11 +378,19 @@
 
 <header>
     <div>
-        <h1>&#127978; LRS Weather</h1>
+        <h1><i class="bi bi-crosshair" style="color:var(--accent)"></i> LRS Weather</h1>
         <div class="sub">Long Range Shooting Forecast</div>
     </div>
-    <div style="font-size:11px;color:var(--muted);text-align:right">
-        Powered by<br>Open-Meteo
+    <div id="attribution-btn" onclick="toggleAttribution(event)" title="View data sources">
+        Powered by<br><span>Open-Meteo</span> <i class="bi bi-info-circle"></i>
+        <div id="attribution-popup">
+            <div class="attr-title">Data Sources</div>
+            <div class="attr-row"><i class="bi bi-cloud-sun-fill"></i> <strong>Weather:</strong> Open-Meteo</div>
+            <div class="attr-row"><i class="bi bi-reception-4"></i> <strong>Models:</strong> NOAA GFS &amp; HRRR (US), ECMWF (global)</div>
+            <div class="attr-row"><i class="bi bi-map"></i> <strong>Map:</strong> OpenStreetMap</div>
+            <div class="attr-row"><i class="bi bi-satellite"></i> <strong>Satellite:</strong> Esri World Imagery</div>
+            <div class="attr-row"><i class="bi bi-geo-alt"></i> <strong>Geocoding:</strong> Nominatim / OSM</div>
+        </div>
     </div>
 </header>
 
@@ -360,16 +399,16 @@
     <div id="search-row">
         <input type="text" id="search-input" placeholder="Search location, range, city..." autocomplete="off" autocorrect="off" />
         <button class="map-btn primary" id="search-btn">Search</button>
-        <button class="map-btn" id="locate-btn" title="Use my location">&#127757;</button>
+        <button class="map-btn" id="locate-btn" title="Use my location"><i class="bi bi-geo-alt-fill"></i></button>
     </div>
     <div id="map">
-        <button id="map-layer-btn" onclick="toggleMapLayer()">&#128752; Satellite</button>
+        <button id="map-layer-btn" onclick="toggleMapLayer()"><i class="bi bi-satellite"></i> Satellite</button>
     </div>
     <div id="loc-bar">
         <span id="loc-name">Tap map or search to set location</span>
         <span id="loc-detail"></span>
         <span id="loc-elev"></span>
-        <button id="save-loc-btn" title="Save this location">&#11088; Save</button>
+        <button id="save-loc-btn" title="Save this location"><i class="bi bi-star"></i> Save</button>
     </div>
 </div>
 
@@ -377,13 +416,13 @@
 <div id="saved-wrap">
     <div id="saved-toggle">
         <div class="tog-left">
-            <span>&#128204; Saved Locations</span>
+            <span><i class="bi bi-pin-map-fill"></i> Saved Locations</span>
             <span class="tog-count" id="saved-count">0</span>
         </div>
-        <span class="tog-arrow">&#9660;</span>
+        <span class="tog-arrow"><i class="bi bi-chevron-down"></i></span>
     </div>
     <div id="saved-list">
-        <div id="saved-empty">No saved locations yet. Set a pin and tap &#11088; Save.</div>
+        <div id="saved-empty">No saved locations yet. Set a pin and tap <i class="bi bi-star"></i> Save.</div>
     </div>
 </div>
 
@@ -471,7 +510,7 @@ function toggleMapLayer() {
     }
     satelliteActive = !satelliteActive;
     const btn = document.getElementById('map-layer-btn');
-    btn.textContent = satelliteActive ? '🗺 Map' : '🛰 Satellite';
+    btn.innerHTML = satelliteActive ? '<i class="bi bi-map"></i> Map' : '<i class="bi bi-satellite"></i> Satellite';
     btn.style.background = satelliteActive ? 'rgba(13,17,23,.85)' : 'rgba(33,38,45,.9)';
 }
 
@@ -770,9 +809,9 @@ function renderDay(days, dayKeys, di) {
         tr.innerHTML = `
             <td>
                 <div class="t-time ${timeClass}">${hLabel}<span class="t-ampm">${ampm}</span></div>
-                ${isNight  ? '<span class="t-night">&#9679; night</span>' : ''}
-                ${isDawn   ? '<span class="t-night" style="color:#e3b341">&#9728; dawn</span>' : ''}
-                ${isDusk   ? '<span class="t-night" style="color:#db6d28">&#9790; dusk</span>' : ''}
+                ${isNight  ? '<span class="t-night"><i class="bi bi-moon-stars-fill" style="color:#6e7681"></i> night</span>' : ''}
+                ${isDawn   ? '<span class="t-night" style="color:#e3b341"><i class="bi bi-sunrise" style="color:#e3b341"></i> dawn</span>' : ''}
+                ${isDusk   ? '<span class="t-night" style="color:#db6d28"><i class="bi bi-sunset" style="color:#db6d28"></i> dusk</span>' : ''}
             </td>
 
             <td>
@@ -795,7 +834,7 @@ function renderDay(days, dayKeys, di) {
                 <div class="gc">
                     <span class="gc-speed ${wc(gust)}">${gust.toFixed(0)}</span>
                     <span class="gc-lbl">mph</span>
-                    ${gust > 20 ? `<span style="font-size:9px;color:var(--c-severe)">&#9888;</span>` : ''}
+                    ${gust > 20 ? `<span style="font-size:11px;color:var(--c-severe)"><i class="bi bi-exclamation-triangle-fill"></i></span>` : ''}
                 </div>
             </td>
 
@@ -854,11 +893,11 @@ function degToCard(d) {
 }
 
 function skyIcon(pct) {
-    if (pct < 10) return '&#9728;';   // ☀
-    if (pct < 30) return '&#127780;'; // 🌤
-    if (pct < 60) return '&#9925;';   // ⛅
-    if (pct < 85) return '&#127781;'; // 🌥
-    return '&#9729;';                 // ☁
+    if (pct < 10) return '<i class="bi bi-sun-fill" style="color:#f5c842;font-size:17px"></i>';
+    if (pct < 30) return '<i class="bi bi-cloud-sun" style="color:#f5c842;font-size:17px"></i>';
+    if (pct < 60) return '<i class="bi bi-cloud-sun-fill" style="color:#adb5bd;font-size:17px"></i>';
+    if (pct < 85) return '<i class="bi bi-clouds" style="color:#8b949e;font-size:17px"></i>';
+    return '<i class="bi bi-clouds-fill" style="color:#6e7681;font-size:17px"></i>';
 }
 
 function avg(arr) {
@@ -914,7 +953,7 @@ function renderSavedList() {
                 <div class="saved-item-meta">${loc.lat.toFixed(5)}, ${loc.lon.toFixed(5)}
                     ${loc.elev ? ` · ${Math.round(loc.elev * 3.28084).toLocaleString()} ft` : ''}</div>
             </div>
-            <button class="saved-item-del" title="Remove" data-idx="${idx}">&#215;</button>
+            <button class="saved-item-del" title="Remove" data-idx="${idx}"><i class="bi bi-x-lg"></i></button>
         `;
         // Load on row click (not delete btn)
         item.addEventListener('click', e => {
@@ -976,7 +1015,7 @@ function updateSaveBtn() {
     const list = loadSaved();
     const saved = list.some(l => Math.abs(l.lat - selLat) < 0.0001 && Math.abs(l.lon - selLon) < 0.0001);
     btn.classList.toggle('saved', saved);
-    btn.textContent = saved ? '★ Saved' : '☆ Save';
+    btn.innerHTML = saved ? '<i class="bi bi-star-fill"></i> Saved' : '<i class="bi bi-star"></i> Save';
 }
 
 function escHtml(s) {
@@ -995,6 +1034,15 @@ document.getElementById('save-loc-btn').addEventListener('click', saveCurrentLoc
 
 // Initial render
 renderSavedList();
+
+// ── Attribution popup ──
+function toggleAttribution(e) {
+    e.stopPropagation();
+    document.getElementById('attribution-popup').classList.toggle('open');
+}
+document.addEventListener('click', () => {
+    document.getElementById('attribution-popup').classList.remove('open');
+});
 </script>
 </body>
 </html>
