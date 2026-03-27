@@ -54,7 +54,28 @@
         header .sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
         /* ── Map ── */
-        #map-wrap { padding: 12px 12px 0; }
+        #map-wrap {
+            margin: 12px 12px 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #map-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 9px 13px; cursor: pointer;
+            font-size: 13px; font-weight: 500;
+            -webkit-tap-highlight-color: transparent; user-select: none;
+            border-bottom: 1px solid transparent;
+        }
+        #map-wrap:not(.collapsed) #map-header { border-bottom-color: var(--border); }
+        #map-header:hover { background: rgba(88,166,255,.05); }
+        #map-header .map-chev {
+            color: var(--muted); font-size: 11px; transition: transform .25s;
+        }
+        #map-wrap.collapsed .map-chev { transform: rotate(180deg); }
+        .map-inner { padding: 12px; }
+        #map-wrap.collapsed .map-inner { display: none; }
 
         #search-row {
             display: flex; gap: 8px; margin-bottom: 8px;
@@ -433,19 +454,25 @@
 
 <!-- MAP SECTION -->
 <div id="map-wrap">
-    <div id="search-row">
-        <input type="text" id="search-input" placeholder="Search location, range, city..." autocomplete="off" autocorrect="off" />
-        <button class="map-btn primary" id="search-btn">Search</button>
-        <button class="map-btn" id="locate-btn" title="Use my location"><i class="bi bi-geo-alt-fill"></i></button>
+    <div id="map-header" onclick="toggleMapCollapse()">
+        <span id="map-header-loc"><i class="bi bi-map"></i>&nbsp; Map &amp; Location</span>
+        <i class="bi bi-chevron-up map-chev"></i>
     </div>
-    <div id="map">
-        <button id="map-layer-btn" onclick="toggleMapLayer()"><i class="bi bi-satellite"></i> Satellite</button>
-    </div>
-    <div id="loc-bar">
-        <span id="loc-name">Tap map or search to set location</span>
-        <span id="loc-detail"></span>
-        <span id="loc-elev"></span>
-        <button id="save-loc-btn" title="Save this location"><i class="bi bi-star"></i> Save</button>
+    <div class="map-inner">
+        <div id="search-row">
+            <input type="text" id="search-input" placeholder="Search location, range, city..." autocomplete="off" autocorrect="off" />
+            <button class="map-btn primary" id="search-btn">Search</button>
+            <button class="map-btn" id="locate-btn" title="Use my location"><i class="bi bi-geo-alt-fill"></i></button>
+        </div>
+        <div id="map">
+            <button id="map-layer-btn" onclick="toggleMapLayer()"><i class="bi bi-satellite"></i> Satellite</button>
+        </div>
+        <div id="loc-bar">
+            <span id="loc-name">Tap map or search to set location</span>
+            <span id="loc-detail"></span>
+            <span id="loc-elev"></span>
+            <button id="save-loc-btn" title="Save this location"><i class="bi bi-star"></i> Save</button>
+        </div>
     </div>
 </div>
 
@@ -544,6 +571,14 @@ const layerSatellite = L.tileLayer(
 layerStreet.addTo(map);
 
 let satelliteActive = false;
+function toggleMapCollapse() {
+    const wrap = document.getElementById('map-wrap');
+    wrap.classList.toggle('collapsed');
+    if (!wrap.classList.contains('collapsed')) {
+        setTimeout(() => map && map.invalidateSize(), 100);
+    }
+}
+
 function toggleMapLayer() {
     if (satelliteActive) {
         map.removeLayer(layerSatellite);
@@ -591,7 +626,10 @@ async function setLocation(lat, lon, label) {
                         .filter(Boolean).join(', ');
         } catch { label = `${lat.toFixed(4)}, ${lon.toFixed(4)}`; }
     }
-    document.getElementById('loc-name').textContent = label || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+    const displayLabel = label || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+    document.getElementById('loc-name').textContent = displayLabel;
+    document.getElementById('map-header-loc').innerHTML =
+        `<i class="bi bi-geo-alt-fill" style="color:var(--accent)"></i>&nbsp; ${displayLabel}`;
 
     // Elevation
     try {
@@ -688,6 +726,7 @@ async function fetchWeather() {
         wxData = await r.json();
         renderForecast();
         wrap.style.display = 'block';
+        document.getElementById('map-wrap').classList.add('collapsed');
     } catch (e) {
         err.textContent = `Failed to load forecast: ${e.message}`;
         err.style.display = 'block';
