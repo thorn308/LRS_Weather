@@ -465,6 +465,74 @@
             font-size: 11px; color: var(--accent); white-space: nowrap; font-weight: 600;
         }
 
+        /* ── Save Forecast button (in loc-bar) ── */
+        #save-forecast-btn {
+            background: none; border: 1px solid var(--border);
+            color: var(--muted); padding: 5px 10px; border-radius: 6px;
+            font-size: 12px; cursor: pointer; white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+            transition: all .15s; display: none;
+        }
+        #save-forecast-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+
+        /* ── Saved Forecasts panel ── */
+        #saved-forecasts-wrap {
+            margin: 8px 12px 0;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden;
+        }
+        #saved-forecasts-toggle {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 9px 13px; cursor: pointer; user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            font-size: 13px; font-weight: 500;
+        }
+        #saved-forecasts-toggle:hover { background: rgba(88,166,255,.05); }
+        #saved-forecasts-toggle .tog-count {
+            font-size: 11px; color: var(--muted);
+            background: var(--surface2); border-radius: 10px; padding: 1px 7px;
+        }
+        #saved-forecasts-toggle .tog-arrow {
+            color: var(--muted); font-size: 11px; transition: transform .2s;
+        }
+        #saved-forecasts-toggle.open .tog-arrow { transform: rotate(180deg); }
+        #saved-forecasts-list {
+            display: none; border-top: 1px solid var(--border); overflow: hidden;
+        }
+        #saved-forecasts-list.open { display: block; }
+        #saved-fc-empty {
+            padding: 14px 13px; font-size: 13px; color: var(--muted); text-align: center;
+        }
+        .saved-fc-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 13px; gap: 10px; border-bottom: 1px solid var(--border);
+            cursor: pointer; transition: background .1s;
+        }
+        .saved-fc-item:last-child { border-bottom: none; }
+        .saved-fc-item:hover { background: var(--surface2); }
+        .saved-fc-info { flex: 1; min-width: 0; }
+        .saved-fc-name {
+            font-size: 13px; font-weight: 600; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .saved-fc-meta { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: 'SF Mono', monospace; }
+        .saved-fc-del {
+            background: none; border: none; color: var(--muted);
+            font-size: 16px; cursor: pointer; padding: 2px 6px;
+            border-radius: 4px; flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent; line-height: 1;
+        }
+        .saved-fc-del:hover { color: var(--c-severe); background: rgba(248,81,73,.1); }
+
+        /* ── Cached forecast banner ── */
+        #cached-banner {
+            display: none; align-items: center; gap: 8px;
+            background: rgba(88,166,255,.08); border: 1px solid rgba(88,166,255,.25);
+            border-radius: 8px; padding: 8px 13px; margin-bottom: 10px;
+            font-size: 12px; color: #58a6ff;
+        }
+        #cached-banner.visible { display: flex; }
+
         /* Responsive: on very small screens hide lower-priority cols */
         @media (max-width: 380px) {
             .col-sky { display: none; }
@@ -521,6 +589,7 @@
             <span id="loc-detail"></span>
             <span id="loc-elev"></span>
             <button id="save-loc-btn" title="Save this location"><i class="bi bi-star"></i> Save</button>
+            <button id="save-forecast-btn" title="Save forecast for offline use"><i class="bi bi-floppy"></i> Save Forecast</button>
         </div>
     </div>
 </div>
@@ -552,6 +621,20 @@
     <button id="fetch-10-btn" disabled>Get 10-Day Forecast</button>
 </div>
 
+<!-- SAVED FORECASTS -->
+<div id="saved-forecasts-wrap">
+    <div id="saved-forecasts-toggle">
+        <div class="tog-left">
+            <span><i class="bi bi-collection"></i> Saved Forecasts</span>
+            <span class="tog-count" id="saved-fc-count">0</span>
+        </div>
+        <span class="tog-arrow"><i class="bi bi-chevron-down"></i></span>
+    </div>
+    <div id="saved-forecasts-list">
+        <div id="saved-fc-empty">No saved forecasts yet — pull a forecast then tap 💾 Save Forecast.</div>
+    </div>
+</div>
+
 <div id="loading">
     <div class="spinner"></div>
     <div>Fetching weather data&hellip;</div>
@@ -564,6 +647,7 @@
 <!-- FORECAST -->
 <div id="forecast-wrap">
 
+    <div id="cached-banner"><i class="bi bi-archive"></i> <span id="cached-banner-text"></span></div>
     <div id="day-summary"></div>
 
     <!-- Wind speed legend -->
@@ -853,6 +937,8 @@ async function fetchWeather(days = 7) {
         renderForecast();
         buildForecastChips();
         wrap.style.display = 'block';
+        document.getElementById('cached-banner').classList.remove('visible');
+        document.getElementById('save-forecast-btn').style.display = 'inline-flex';
         document.getElementById('map-wrap').classList.add('collapsed');
     } catch (e) {
         err.textContent = `Failed to load forecast: ${e.message}`;
@@ -1315,6 +1401,141 @@ function toggleAttribution(e) {
 document.addEventListener('click', () => {
     document.getElementById('attribution-popup').classList.remove('open');
 });
+
+// ═══════════════════════════════════════════
+//  SAVED FORECASTS (offline cache)
+// ═══════════════════════════════════════════
+const FC_KEY = 'lrs_forecasts';
+
+function getSavedForecasts() {
+    try { return JSON.parse(localStorage.getItem(FC_KEY)) || []; }
+    catch { return []; }
+}
+function persistForecasts(list) {
+    try { localStorage.setItem(FC_KEY, JSON.stringify(list)); }
+    catch { alert('Could not save — storage may be full.'); }
+}
+
+function saveCurrentForecast() {
+    if (!wxData || !selLat) return;
+    const locName  = document.getElementById('loc-name').textContent || 'Unknown';
+    const numDays  = new Set(wxData.hourly.time.map(t => t.substring(0, 10))).size;
+    const startDate = document.getElementById('start-date').value || todayISO();
+    const defaultName = `${locName} — ${numDays}-Day (${startDate})`;
+    const name = prompt('Save forecast as:', defaultName);
+    if (name === null) return;
+
+    const list = getSavedForecasts();
+    list.unshift({
+        id: Date.now(),
+        name: name.trim() || defaultName,
+        location: { lat: selLat, lon: selLon, name: locName, elev: selElev },
+        startDate, days: lastForecastDays,
+        savedAt: new Date().toISOString(),
+        wxData
+    });
+    if (list.length > 10) list.length = 10;
+    persistForecasts(list);
+    renderSavedForecasts();
+
+    const btn = document.getElementById('save-forecast-btn');
+    btn.innerHTML = '<i class="bi bi-check-lg"></i> Saved!';
+    btn.style.cssText += 'border-color:#3fb950;color:#3fb950';
+    setTimeout(() => {
+        btn.innerHTML = '<i class="bi bi-floppy"></i> Save Forecast';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+    }, 2000);
+}
+
+function loadSavedForecast(fc) {
+    wxData   = fc.wxData;
+    selLat   = fc.location.lat;
+    selLon   = fc.location.lon;
+    selElev  = fc.location.elev || 0;
+    lastForecastDays = fc.days;
+    selDay   = 0;
+
+    // Restore location display
+    document.getElementById('loc-name').textContent   = fc.location.name;
+    document.getElementById('loc-detail').textContent = `${selLat.toFixed(5)}, ${selLon.toFixed(5)}`;
+    document.getElementById('loc-elev').textContent   = `Elev: ${Math.round(selElev * 3.28084).toLocaleString()} ft`;
+    document.getElementById('loc-bar').style.display  = 'flex';
+    document.getElementById('start-date').value       = fc.startDate;
+
+    // Move map pin
+    if (mapMarker) map.removeLayer(mapMarker);
+    mapMarker = L.marker([selLat, selLon]).addTo(map);
+    map.setView([selLat, selLon], map.getZoom());
+
+    // Show cached banner
+    const saved = new Date(fc.savedAt).toLocaleString('en-US',
+        { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    document.getElementById('cached-banner-text').textContent = `Offline cache — saved ${saved}. Tap a forecast button to refresh.`;
+    document.getElementById('cached-banner').classList.add('visible');
+    document.getElementById('save-forecast-btn').style.display = 'inline-flex';
+
+    // Enable buttons
+    ['fetch-3-btn','fetch-btn','fetch-10-btn'].forEach(id =>
+        document.getElementById(id).disabled = false);
+
+    // Render
+    renderForecast();
+    buildForecastChips();
+    document.getElementById('forecast-wrap').style.display = 'block';
+    document.getElementById('map-wrap').classList.add('collapsed');
+}
+
+function deleteSavedForecast(idx) {
+    const list = getSavedForecasts();
+    list.splice(idx, 1);
+    persistForecasts(list);
+    renderSavedForecasts();
+}
+
+function renderSavedForecasts() {
+    const list   = getSavedForecasts();
+    const countEl = document.getElementById('saved-fc-count');
+    const listEl  = document.getElementById('saved-forecasts-list');
+    const emptyEl = document.getElementById('saved-fc-empty');
+
+    countEl.textContent = list.length;
+    listEl.querySelectorAll('.saved-fc-item').forEach(el => el.remove());
+    emptyEl.style.display = list.length ? 'none' : 'block';
+
+    list.forEach((fc, idx) => {
+        const item = document.createElement('div');
+        item.className = 'saved-fc-item';
+        const savedDate = new Date(fc.savedAt).toLocaleDateString('en-US',
+            { month: 'short', day: 'numeric', year: 'numeric' });
+        item.innerHTML = `
+            <div class="saved-fc-info">
+                <div class="saved-fc-name">${escHtml(fc.name)}</div>
+                <div class="saved-fc-meta">${fc.days}-day · saved ${savedDate}</div>
+            </div>
+            <button class="saved-fc-del" title="Delete"><i class="bi bi-x-lg"></i></button>`;
+        item.addEventListener('click', e => {
+            if (e.target.closest('.saved-fc-del')) return;
+            loadSavedForecast(fc);
+            document.getElementById('saved-forecasts-toggle').classList.remove('open');
+            document.getElementById('saved-forecasts-list').classList.remove('open');
+        });
+        item.querySelector('.saved-fc-del').addEventListener('click', e => {
+            e.stopPropagation();
+            deleteSavedForecast(idx);
+        });
+        listEl.appendChild(item);
+    });
+}
+
+document.getElementById('saved-forecasts-toggle').addEventListener('click', () => {
+    document.getElementById('saved-forecasts-toggle').classList.toggle('open');
+    document.getElementById('saved-forecasts-list').classList.toggle('open');
+});
+document.getElementById('save-forecast-btn').addEventListener('click', saveCurrentForecast);
+
+// Init
+renderSavedForecasts();
 </script>
 </body>
 </html>
