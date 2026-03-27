@@ -636,29 +636,34 @@ function buildForecastChips() {
 
     h.time.forEach((_, i) => {
         const code  = h.weather_code?.[i] ?? 0;
-        const temp  = h.temperature_2m[i]     ?? 50;
-        const wind  = h.wind_speed_10m[i]     ?? 0;
-        const gust  = h.wind_gusts_10m[i]     ?? 0;
+        const temp  = h.temperature_2m[i]          ?? 50;
+        const wind  = h.wind_speed_10m[i]          ?? 0;
+        const gust  = h.wind_gusts_10m[i]          ?? 0;
+        const pprob = h.precipitation_probability?.[i] ?? 0;
+        const precip = h.precipitation?.[i]        ?? 0;
 
-        // WMO thunderstorm codes
-        if ([95,96,99].includes(code))                         hasThunder   = true;
-        // Heavy rain / freezing rain
-        if ([65,67,82].includes(code))                         hasHeavyRain = true;
-        // Moderate/light rain, drizzle
-        else if ([51,53,55,56,61,63,80,81].includes(code))    hasRain      = true;
-        // Snow / blizzard
-        if ([71,73,75,77,85,86].includes(code))                hasSnow      = true;
-        // Freezing drizzle / freezing rain, or below-freezing temp
-        if ([56,57,66,67].includes(code) || temp < 32)         hasFreeze    = true;
+        // Precipitation must be plausible: prob >15% OR measurable amount >0.01 in
+        const precipLikely = pprob > 15 || precip > 0.01;
+
+        // WMO thunderstorm codes — use code alone (thunder is always significant)
+        if ([95,96,99].includes(code))                                          hasThunder   = true;
+        // Heavy rain / freezing rain — require precipLikely
+        if ([65,67,82].includes(code) && precipLikely)                          hasHeavyRain = true;
+        // Moderate/light rain, drizzle — require precipLikely
+        else if ([51,53,55,56,61,63,80,81].includes(code) && precipLikely)     hasRain      = true;
+        // Snow / blizzard — require precipLikely
+        if ([71,73,75,77,85,86].includes(code) && precipLikely)                hasSnow      = true;
+        // Freezing: code-based requires precipLikely; sub-freezing temp is standalone
+        if (([56,57,66,67].includes(code) && precipLikely) || temp < 32)       hasFreeze    = true;
         // Cold but above freezing
-        if (temp >= 32 && temp < 40)                           hasCold      = true;
-        // Fog / rime fog
-        if ([45,48].includes(code))                            hasFog       = true;
+        if (temp >= 32 && temp < 40)                                            hasCold      = true;
+        // Fog / rime fog — code alone is sufficient
+        if ([45,48].includes(code))                                             hasFog       = true;
         // Heat
-        if (temp > 95)                                         hasHeat      = true;
+        if (temp > 95)                                                          hasHeat      = true;
         // Winds
-        if (wind > 25 || gust > 35)                            hasHighWind  = true;
-        else if (wind > 15 && !hasHighWind)                    hasModWind   = true;
+        if (wind > 25 || gust > 35)                                            hasHighWind  = true;
+        else if (wind > 15 && !hasHighWind)                                    hasModWind   = true;
     });
 
     const chips = [];
