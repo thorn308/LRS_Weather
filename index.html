@@ -88,7 +88,7 @@
             background: var(--surface); border: 1px solid var(--border);
             border-radius: 8px; padding: 9px 13px;
             margin-top: 8px;
-            display: flex; flex-wrap: wrap; justify-content: space-between;
+            display: none; flex-wrap: wrap; justify-content: space-between;
             align-items: center; gap: 4px;
         }
         #loc-name { font-size: 13px; font-weight: 500; }
@@ -295,35 +295,43 @@
             border-color: #e3b341; color: #e3b341;
         }
 
+        /* ── Saved + Date combined row ── */
         #saved-wrap {
             margin: 8px 12px 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
         }
-
+        #saved-controls {
+            display: flex; align-items: center;
+        }
         #saved-toggle {
+            flex: 1; min-width: 0;
             display: flex; align-items: center; justify-content: space-between;
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: 8px; padding: 9px 13px;
+            background: none; border: none;
+            border-right: 1px solid var(--border);
+            border-radius: 0; padding: 9px 13px;
             cursor: pointer; user-select: none;
             -webkit-tap-highlight-color: transparent;
             font-size: 13px; font-weight: 500;
         }
-        #saved-toggle:hover { border-color: var(--accent); }
-        #saved-toggle .tog-left { display: flex; align-items: center; gap: 7px; }
+        #saved-toggle:hover { background: rgba(88,166,255,.05); }
+        #saved-toggle .tog-left { display: flex; align-items: center; gap: 7px; min-width: 0; }
         #saved-toggle .tog-count {
             font-size: 11px; color: var(--muted);
             background: var(--surface2); border-radius: 10px;
-            padding: 1px 7px;
+            padding: 1px 7px; flex-shrink: 0;
         }
         #saved-toggle .tog-arrow {
             color: var(--muted); font-size: 11px;
-            transition: transform .2s;
+            transition: transform .2s; flex-shrink: 0;
         }
         #saved-toggle.open .tog-arrow { transform: rotate(180deg); }
 
         #saved-list {
             display: none;
-            border: 1px solid var(--border); border-top: none;
-            border-radius: 0 0 8px 8px;
+            border-top: 1px solid var(--border);
             overflow: hidden;
         }
         #saved-list.open { display: block; }
@@ -374,27 +382,24 @@
         }
         #map-layer-btn:hover { border-color: var(--accent); }
 
-        /* ── Date picker row ── */
+        /* ── Date picker (inline inside saved-wrap) ── */
         #date-row {
-            display: flex; align-items: center; gap: 10px;
-            margin: 8px 12px 0;
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: 8px; padding: 9px 13px;
+            display: flex; align-items: center; gap: 7px;
+            padding: 9px 10px; flex-shrink: 0;
         }
         #date-row label {
-            font-size: 13px; font-weight: 500; color: var(--muted);
-            white-space: nowrap; display: flex; align-items: center; gap: 6px;
+            font-size: 13px; color: var(--muted);
+            display: flex; align-items: center;
         }
         #start-date {
-            flex: 1; background: var(--surface2); border: 1px solid var(--border);
-            color: var(--text); padding: 6px 10px; border-radius: 6px;
-            font-size: 14px; outline: none; -webkit-appearance: none;
-            color-scheme: dark; min-width: 0;
+            background: var(--surface2); border: 1px solid var(--border);
+            color: var(--text); padding: 5px 7px; border-radius: 6px;
+            font-size: 13px; outline: none; -webkit-appearance: none;
+            color-scheme: dark; width: 118px;
         }
         #start-date:focus { border-color: var(--accent); }
         #date-hint {
-            font-size: 11px; color: var(--accent); white-space: nowrap;
-            font-weight: 600;
+            font-size: 11px; color: var(--accent); white-space: nowrap; font-weight: 600;
         }
 
         /* Responsive: on very small screens hide lower-priority cols */
@@ -444,25 +449,25 @@
     </div>
 </div>
 
-<!-- SAVED LOCATIONS -->
+<!-- SAVED LOCATIONS + DATE PICKER (same row) -->
 <div id="saved-wrap">
-    <div id="saved-toggle">
-        <div class="tog-left">
-            <span><i class="bi bi-pin-map-fill"></i> Saved Locations</span>
-            <span class="tog-count" id="saved-count">0</span>
+    <div id="saved-controls">
+        <div id="saved-toggle">
+            <div class="tog-left">
+                <span><i class="bi bi-pin-map-fill"></i> Saved</span>
+                <span class="tog-count" id="saved-count">0</span>
+            </div>
+            <span class="tog-arrow"><i class="bi bi-chevron-down"></i></span>
         </div>
-        <span class="tog-arrow"><i class="bi bi-chevron-down"></i></span>
+        <div id="date-row">
+            <label for="start-date"><i class="bi bi-calendar3"></i></label>
+            <input type="date" id="start-date">
+            <span id="date-hint">Today</span>
+        </div>
     </div>
     <div id="saved-list">
         <div id="saved-empty">No saved locations yet. Set a pin and tap <i class="bi bi-star"></i> Save.</div>
     </div>
-</div>
-
-<!-- DATE PICKER -->
-<div id="date-row">
-    <label for="start-date"><i class="bi bi-calendar3"></i> Start Date</label>
-    <input type="date" id="start-date">
-    <span id="date-hint">Today</span>
 </div>
 
 <button id="fetch-btn" disabled>Get 7-Day Shooting Forecast</button>
@@ -570,6 +575,7 @@ async function setLocation(lat, lon, label) {
 
     document.getElementById('loc-detail').textContent =
         `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    document.getElementById('loc-bar').style.display = 'flex';
     document.getElementById('fetch-btn').disabled = false;
 
     // Reverse geocode
