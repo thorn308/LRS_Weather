@@ -475,26 +475,18 @@
         }
         #save-forecast-btn:hover { border-color: #58a6ff; color: #58a6ff; }
 
-        /* ── Saved Forecasts panel ── */
-        #saved-forecasts-wrap {
-            margin: 8px 12px 0;
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: 8px; overflow: hidden;
-        }
+        /* ── Saved Forecasts toggle (inline in saved-controls) ── */
         #saved-forecasts-toggle {
+            flex: 1; min-width: 0;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 9px 13px; cursor: pointer; user-select: none;
+            background: none; border: none;
+            border-right: 1px solid var(--border);
+            border-radius: 0; padding: 9px 13px;
+            cursor: pointer; user-select: none;
             -webkit-tap-highlight-color: transparent;
             font-size: 13px; font-weight: 500;
         }
         #saved-forecasts-toggle:hover { background: rgba(88,166,255,.05); }
-        #saved-forecasts-toggle .tog-count {
-            font-size: 11px; color: var(--muted);
-            background: var(--surface2); border-radius: 10px; padding: 1px 7px;
-        }
-        #saved-forecasts-toggle .tog-arrow {
-            color: var(--muted); font-size: 11px; transition: transform .2s;
-        }
         #saved-forecasts-toggle.open .tog-arrow { transform: rotate(180deg); }
         #saved-forecasts-list {
             display: none; border-top: 1px solid var(--border); overflow: hidden;
@@ -594,13 +586,20 @@
     </div>
 </div>
 
-<!-- SAVED LOCATIONS + DATE PICKER (same row) -->
+<!-- SAVED LOCATIONS + SAVED FORECASTS + DATE PICKER (same row) -->
 <div id="saved-wrap">
     <div id="saved-controls">
         <div id="saved-toggle">
             <div class="tog-left">
                 <span><i class="bi bi-pin-map-fill"></i> Saved</span>
                 <span class="tog-count" id="saved-count">0</span>
+            </div>
+            <span class="tog-arrow"><i class="bi bi-chevron-down"></i></span>
+        </div>
+        <div id="saved-forecasts-toggle">
+            <div class="tog-left">
+                <span><i class="bi bi-collection"></i> Forecasts</span>
+                <span class="tog-count" id="saved-fc-count">0</span>
             </div>
             <span class="tog-arrow"><i class="bi bi-chevron-down"></i></span>
         </div>
@@ -613,26 +612,15 @@
     <div id="saved-list">
         <div id="saved-empty">No saved locations yet. Set a pin and tap <i class="bi bi-star"></i> Save.</div>
     </div>
+    <div id="saved-forecasts-list">
+        <div id="saved-fc-empty">No saved forecasts yet — pull a forecast then tap 💾 Save Forecast.</div>
+    </div>
 </div>
 
 <div id="btn-row">
     <button id="fetch-3-btn" disabled>Get 3-Day Forecast</button>
     <button id="fetch-btn" disabled>Get 7-Day Forecast</button>
     <button id="fetch-10-btn" disabled>Get 10-Day Forecast</button>
-</div>
-
-<!-- SAVED FORECASTS -->
-<div id="saved-forecasts-wrap">
-    <div id="saved-forecasts-toggle">
-        <div class="tog-left">
-            <span><i class="bi bi-collection"></i> Saved Forecasts</span>
-            <span class="tog-count" id="saved-fc-count">0</span>
-        </div>
-        <span class="tog-arrow"><i class="bi bi-chevron-down"></i></span>
-    </div>
-    <div id="saved-forecasts-list">
-        <div id="saved-fc-empty">No saved forecasts yet — pull a forecast then tap 💾 Save Forecast.</div>
-    </div>
 </div>
 
 <div id="loading">
@@ -1340,10 +1328,13 @@ function escHtml(s) {
 
 // Toggle panel open/close
 document.getElementById('saved-toggle').addEventListener('click', () => {
-    const toggle   = document.getElementById('saved-toggle');
-    const savedList = document.getElementById('saved-list');
-    toggle.classList.toggle('open');
-    savedList.classList.toggle('open');
+    const isOpen = document.getElementById('saved-list').classList.contains('open');
+    // Close forecasts dropdown
+    document.getElementById('saved-forecasts-toggle').classList.remove('open');
+    document.getElementById('saved-forecasts-list').classList.remove('open');
+    // Toggle locations dropdown
+    document.getElementById('saved-toggle').classList.toggle('open', !isOpen);
+    document.getElementById('saved-list').classList.toggle('open', !isOpen);
 });
 
 document.getElementById('save-loc-btn').addEventListener('click', saveCurrentLocation);
@@ -1529,8 +1520,13 @@ function renderSavedForecasts() {
 }
 
 document.getElementById('saved-forecasts-toggle').addEventListener('click', () => {
-    document.getElementById('saved-forecasts-toggle').classList.toggle('open');
-    document.getElementById('saved-forecasts-list').classList.toggle('open');
+    const isOpen = document.getElementById('saved-forecasts-list').classList.contains('open');
+    // Close locations dropdown
+    document.getElementById('saved-toggle').classList.remove('open');
+    document.getElementById('saved-list').classList.remove('open');
+    // Toggle forecasts dropdown
+    document.getElementById('saved-forecasts-toggle').classList.toggle('open', !isOpen);
+    document.getElementById('saved-forecasts-list').classList.toggle('open', !isOpen);
 });
 document.getElementById('save-forecast-btn').addEventListener('click', saveCurrentForecast);
 
