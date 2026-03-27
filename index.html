@@ -62,7 +62,7 @@
             overflow: hidden;
         }
         #map-header {
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex; flex-direction: column;
             padding: 9px 13px; cursor: pointer;
             font-size: 13px; font-weight: 500;
             -webkit-tap-highlight-color: transparent; user-select: none;
@@ -70,10 +70,30 @@
         }
         #map-wrap:not(.collapsed) #map-header { border-bottom-color: var(--border); }
         #map-header:hover { background: rgba(88,166,255,.05); }
+        #map-header-top {
+            display: flex; align-items: center; justify-content: space-between;
+        }
         #map-header .map-chev {
-            color: var(--muted); font-size: 11px; transition: transform .25s;
+            color: var(--muted); font-size: 11px; transition: transform .25s; flex-shrink: 0;
         }
         #map-wrap.collapsed .map-chev { transform: rotate(180deg); }
+
+        /* ── 7-Day forecast chips (visible in collapsed header) ── */
+        #forecast-chips {
+            display: none; flex-wrap: wrap; gap: 5px; padding-top: 7px;
+        }
+        #map-wrap.collapsed #forecast-chips.has-data { display: flex; }
+        .f-chip {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 9px; border-radius: 12px;
+            font-size: 11px; font-weight: 600; white-space: nowrap;
+        }
+        .f-chip.danger { background:rgba(248,81,73,.15);  color:#f85149; border:1px solid rgba(248,81,73,.35); }
+        .f-chip.warn   { background:rgba(227,179,65,.15); color:#e3b341; border:1px solid rgba(227,179,65,.35); }
+        .f-chip.info   { background:rgba(88,166,255,.15); color:#58a6ff; border:1px solid rgba(88,166,255,.35); }
+        .f-chip.good   { background:rgba(63,185,80,.15);  color:#3fb950; border:1px solid rgba(63,185,80,.35); }
+        .f-chip.muted  { background:rgba(139,148,158,.12);color:#a8b3bf; border:1px solid rgba(139,148,158,.3); }
+
         .map-inner { padding: 12px; }
         #map-wrap.collapsed .map-inner { display: none; }
 
@@ -455,8 +475,11 @@
 <!-- MAP SECTION -->
 <div id="map-wrap">
     <div id="map-header" onclick="toggleMapCollapse()">
-        <span id="map-header-loc"><i class="bi bi-map"></i>&nbsp; Map &amp; Location</span>
-        <i class="bi bi-chevron-up map-chev"></i>
+        <div id="map-header-top">
+            <span id="map-header-loc"><i class="bi bi-map"></i>&nbsp; Map &amp; Location</span>
+            <i class="bi bi-chevron-up map-chev"></i>
+        </div>
+        <div id="forecast-chips"></div>
     </div>
     <div class="map-inner">
         <div id="search-row">
@@ -571,6 +594,65 @@ const layerSatellite = L.tileLayer(
 layerStreet.addTo(map);
 
 let satelliteActive = false;
+// ═══════════════════════════════════════════
+//  7-DAY FORECAST SUMMARY CHIPS
+// ═══════════════════════════════════════════
+function buildForecastChips() {
+    const h = wxData.hourly;
+    let hasThunder = false, hasHighWind = false, hasHeavyRain = false,
+        hasRain = false, hasSnow = false, hasFreeze = false,
+        hasCold = false, hasFog = false, hasHeat = false, hasModWind = false;
+
+    h.time.forEach((_, i) => {
+        const code  = h.weather_code?.[i] ?? 0;
+        const temp  = h.temperature_2m[i]     ?? 50;
+        const wind  = h.wind_speed_10m[i]     ?? 0;
+        const gust  = h.wind_gusts_10m[i]     ?? 0;
+
+        // WMO thunderstorm codes
+        if ([95,96,99].includes(code))                         hasThunder   = true;
+        // Heavy rain / freezing rain
+        if ([65,67,82].includes(code))                         hasHeavyRain = true;
+        // Moderate/light rain, drizzle
+        else if ([51,53,55,56,61,63,80,81].includes(code))    hasRain      = true;
+        // Snow / blizzard
+        if ([71,73,75,77,85,86].includes(code))                hasSnow      = true;
+        // Freezing drizzle / freezing rain, or below-freezing temp
+        if ([56,57,66,67].includes(code) || temp < 32)         hasFreeze    = true;
+        // Cold but above freezing
+        if (temp >= 32 && temp < 40)                           hasCold      = true;
+        // Fog / rime fog
+        if ([45,48].includes(code))                            hasFog       = true;
+        // Heat
+        if (temp > 95)                                         hasHeat      = true;
+        // Winds
+        if (wind > 25 || gust > 35)                            hasHighWind  = true;
+        else if (wind > 15 && !hasHighWind)                    hasModWind   = true;
+    });
+
+    const chips = [];
+    // Safety alerts — shown first, red
+    if (hasThunder)   chips.push({ cls:'danger', icon:'⚡', text:'Lightning Risk' });
+    if (hasHighWind)  chips.push({ cls:'danger', icon:'💨', text:'High Winds' });
+    // Gear needed — amber
+    if (hasHeavyRain) chips.push({ cls:'warn',   icon:'🌧️', text:'Heavy Rain — Rain Jacket' });
+    else if (hasRain) chips.push({ cls:'warn',   icon:'🌦️', text:'Rain Jacket' });
+    if (hasSnow)      chips.push({ cls:'info',   icon:'❄️', text:'Snow / Ice' });
+    if (hasFreeze)    chips.push({ cls:'info',   icon:'🧊', text:'Freezing Temps — Insulated Layers' });
+    else if (hasCold) chips.push({ cls:'muted',  icon:'🧥', text:'Cold — Insulated Layers' });
+    if (hasFog)       chips.push({ cls:'muted',  icon:'🌫️', text:'Low Visibility' });
+    if (hasHeat)      chips.push({ cls:'warn',   icon:'🌡️', text:'Extreme Heat — Sun Protection' });
+    if (hasModWind)   chips.push({ cls:'muted',  icon:'💨', text:'Moderate Winds' });
+    // All clear
+    if (chips.length === 0) chips.push({ cls:'good', icon:'✅', text:'Clear Conditions — 7 Days' });
+
+    const el = document.getElementById('forecast-chips');
+    el.innerHTML = chips.map(c =>
+        `<span class="f-chip ${c.cls}">${c.icon} ${c.text}</span>`
+    ).join('');
+    el.classList.add('has-data');
+}
+
 function toggleMapCollapse() {
     const wrap = document.getElementById('map-wrap');
     wrap.classList.toggle('collapsed');
@@ -725,6 +807,7 @@ async function fetchWeather() {
         if (!r.ok) throw new Error(`API returned ${r.status}`);
         wxData = await r.json();
         renderForecast();
+        buildForecastChips();
         wrap.style.display = 'block';
         document.getElementById('map-wrap').classList.add('collapsed');
     } catch (e) {
