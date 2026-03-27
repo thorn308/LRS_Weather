@@ -83,14 +83,13 @@
             display: none; flex-direction: column; gap: 5px; padding-top: 7px;
         }
         #map-wrap.collapsed #forecast-chips-wrap.has-data { display: flex; }
-        #map-header-loc {
+        #map-header-title {
             flex: 1; min-width: 0; overflow: hidden;
             text-overflow: ellipsis; white-space: nowrap;
         }
         #forecast-chips-label {
-            display: none; flex-shrink: 0;
-            font-size: 13px; font-weight: 500; color: var(--muted);
-            white-space: nowrap;
+            display: none;
+            font-size: 13px; font-weight: 500; color: var(--text);
         }
         #map-wrap.collapsed #forecast-chips-label.active { display: inline; }
         #forecast-chips {
@@ -499,8 +498,9 @@
 <div id="map-wrap">
     <div id="map-header" onclick="toggleMapCollapse()">
         <div id="map-header-top">
-            <span id="map-header-loc"><i class="bi bi-map"></i>&nbsp; Map &amp; Location</span>
-            <span id="forecast-chips-label">Weather Considerations</span>
+            <div id="map-header-title">
+                <span id="map-header-loc"><i class="bi bi-map"></i>&nbsp; Map &amp; Location</span><span id="forecast-chips-label"> &mdash; Weather Considerations</span>
+            </div>
             <i class="bi bi-chevron-up map-chev"></i>
         </div>
         <div id="forecast-chips-wrap">
