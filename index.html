@@ -153,21 +153,21 @@
             display: flex; gap: 8px;
             margin: 10px 12px;
         }
-        #fetch-btn, #fetch-10-btn {
+        #fetch-btn, #fetch-3-btn, #fetch-10-btn {
             flex: 1;
-            border: none; padding: 13px 6px; border-radius: 10px;
-            font-size: 15px; font-weight: 700; cursor: pointer;
+            border: none; padding: 13px 4px; border-radius: 10px;
+            font-size: 14px; font-weight: 700; cursor: pointer;
             -webkit-tap-highlight-color: transparent;
             transition: opacity .15s; text-align: center;
         }
         #fetch-btn {
             background: var(--accent); color: #0d1117;
         }
-        #fetch-10-btn {
+        #fetch-3-btn, #fetch-10-btn {
             background: var(--surface2); color: var(--accent);
             border: 1.5px solid var(--accent);
         }
-        #fetch-btn:disabled, #fetch-10-btn:disabled { opacity: .45; cursor: default; }
+        #fetch-btn:disabled, #fetch-3-btn:disabled, #fetch-10-btn:disabled { opacity: .45; cursor: default; }
 
         /* ── Status ── */
         #loading {
@@ -547,6 +547,7 @@
 </div>
 
 <div id="btn-row">
+    <button id="fetch-3-btn" disabled>Get 3-Day Forecast</button>
     <button id="fetch-btn" disabled>Get 7-Day Forecast</button>
     <button id="fetch-10-btn" disabled>Get 10-Day Forecast</button>
 </div>
@@ -729,6 +730,7 @@ async function setLocation(lat, lon, label) {
     document.getElementById('loc-detail').textContent =
         `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
     document.getElementById('loc-bar').style.display = 'flex';
+    document.getElementById('fetch-3-btn').disabled  = false;
     document.getElementById('fetch-btn').disabled    = false;
     document.getElementById('fetch-10-btn').disabled = false;
 
@@ -798,19 +800,21 @@ document.getElementById('locate-btn').addEventListener('click', () => {
 // ═══════════════════════════════════════════
 //  FETCH WEATHER
 // ═══════════════════════════════════════════
+document.getElementById('fetch-3-btn').addEventListener('click',  () => fetchWeather(3));
 document.getElementById('fetch-btn').addEventListener('click',    () => fetchWeather(7));
 document.getElementById('fetch-10-btn').addEventListener('click', () => fetchWeather(10));
 
 async function fetchWeather(days = 7) {
     if (!selLat) return;
     lastForecastDays = days;
+    const btn3  = document.getElementById('fetch-3-btn');
     const btn7  = document.getElementById('fetch-btn');
     const btn10 = document.getElementById('fetch-10-btn');
     const load  = document.getElementById('loading');
     const err   = document.getElementById('error-msg');
     const wrap  = document.getElementById('forecast-wrap');
 
-    btn7.disabled = btn10.disabled = true;
+    btn3.disabled = btn7.disabled = btn10.disabled = true;
     load.style.display = 'block';
     err.style.display = 'none';
     wrap.style.display = 'none';
@@ -855,7 +859,7 @@ async function fetchWeather(days = 7) {
         err.style.display = 'block';
     } finally {
         load.style.display = 'none';
-        btn7.disabled = btn10.disabled = false;
+        btn3.disabled = btn7.disabled = btn10.disabled = false;
     }
 }
 
@@ -1269,6 +1273,7 @@ function todayISO() {
 (function initDatePicker() {
     const input = document.getElementById('start-date');
     const hint  = document.getElementById('date-hint');
+    const btn3  = document.getElementById('fetch-3-btn');
     const btn7  = document.getElementById('fetch-btn');
     const btn10 = document.getElementById('fetch-10-btn');
 
@@ -1285,6 +1290,7 @@ function todayISO() {
         const today = todayISO();
         if (!val || val === today) {
             hint.textContent = 'Today';
+            if (!btn3.disabled)  btn3.textContent  = 'Get 3-Day Forecast';
             if (!btn7.disabled)  btn7.textContent  = 'Get 7-Day Forecast';
             if (!btn10.disabled) btn10.textContent = 'Get 10-Day Forecast';
             return;
@@ -1295,6 +1301,7 @@ function todayISO() {
 
         const label = new Date(val + 'T12:00:00')
             .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        if (!btn3.disabled)  btn3.textContent  = `3-Day from ${label}`;
         if (!btn7.disabled)  btn7.textContent  = `7-Day from ${label}`;
         if (!btn10.disabled) btn10.textContent = `10-Day from ${label}`;
     });
