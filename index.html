@@ -530,6 +530,24 @@
             .col-sky { display: none; }
         }
 
+        /* ── Sunrise / Sunset separator rows ── */
+        .sun-row td {
+            padding: 4px 8px; border-bottom: none !important;
+        }
+        .sun-row:hover { background: none !important; }
+        .sun-sep {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 10px; font-weight: 700; letter-spacing: .4px;
+            white-space: nowrap;
+        }
+        .sun-line {
+            flex: 1; height: 1px;
+        }
+        .sun-rise .sun-line { background: linear-gradient(90deg, transparent, #f5c842 40%, transparent); }
+        .sun-rise .sun-label { color: #f5c842; }
+        .sun-set  .sun-line { background: linear-gradient(90deg, transparent, #db6d28 40%, transparent); }
+        .sun-set  .sun-label { color: #db6d28; }
+
         /* ── Unit toggle ── */
         #unit-toggle-btn {
             background: var(--surface2); border: 1px solid var(--border);
@@ -1614,8 +1632,24 @@ function renderDay(days, dayKeys, di) {
     const fWrap = document.getElementById('forecast-wrap');
     shootingAzimuth !== null ? fWrap.classList.add('has-azimuth') : fWrap.classList.remove('has-azimuth');
 
+    const sunTimes = selLat ? getSunTimes(dk, selLat, selLon) : null;
+    const totalCols = 9 + (shootingAzimuth !== null ? 1 : 0); // base cols + optional x-wind
+    let sunriseInserted = false, sunsetInserted = false;
+
     idxs.forEach(i => {
         const hour   = parseInt(h.time[i].substring(11,13));
+        const hMins  = hour * 60; // minutes from midnight for this slot
+
+        if (sunTimes) {
+            if (!sunriseInserted && hMins >= sunTimes.riseMin) {
+                tbody.appendChild(makeSunRow(sunTimes.riseMin, 'rise', totalCols));
+                sunriseInserted = true;
+            }
+            if (!sunsetInserted && hMins >= sunTimes.setMin) {
+                tbody.appendChild(makeSunRow(sunTimes.setMin, 'set', totalCols));
+                sunsetInserted = true;
+            }
+        }
         const wind10 = h.wind_speed_10m[i]            ?? 0;
         const wind80 = h.wind_speed_80m[i]            ?? 0;
         const gust   = h.wind_gusts_10m[i]            ?? 0;
@@ -1762,6 +1796,69 @@ function circularMean(angles) {
     const cx = rad.reduce((s, r) => s + Math.cos(r), 0);
     let m = Math.atan2(sx / angles.length, cx / angles.length) * 180 / Math.PI;
     return (m + 360) % 360;
+}
+
+// ── Solar calculations (NOAA algorithm) ──────────────────────
+// Returns { riseMin, setMin } in LOCAL minutes-from-midnight,
+// or null if polar conditions (midnight sun / polar night).
+function getSunTimes(dateStr, lat, lon) {
+    const d    = new Date(dateStr + 'T12:00:00Z');
+    const JD   = d.getTime() / 86400000 + 2440587.5;
+    const T    = (JD - 2451545.0) / 36525.0;
+    const L0   = (280.46646 + T * (36000.76983 + T * 0.0003032)) % 360;
+    const M    = 357.52911 + T * (35999.05029 - 0.0001537 * T);
+    const Mr   = M * Math.PI / 180;
+    const C    = Math.sin(Mr)   * (1.914602 - T * (0.004817 + 0.000014 * T))
+               + Math.sin(2*Mr) * (0.019993 - 0.000101 * T)
+               + Math.sin(3*Mr) * 0.000289;
+    const sunLon = L0 + C;
+    const omega  = 125.04 - 1934.136 * T;
+    const lambda = sunLon - 0.00569 - 0.00478 * Math.sin(omega * Math.PI / 180);
+    const eps0   = 23.0 + (26.0 + (21.448 - T*(46.815 + T*(0.00059 - T*0.001813)))/60)/60;
+    const eps    = eps0 + 0.00256 * Math.cos(omega * Math.PI / 180);
+    const sinDec = Math.sin(eps * Math.PI/180) * Math.sin(lambda * Math.PI/180);
+    const dec    = Math.asin(sinDec);
+    const y      = Math.tan((eps/2) * Math.PI/180) ** 2;
+    const l0r    = L0 * Math.PI/180;
+    const ecc    = 0.016708634 - T*(0.000042037 + 0.0000001267*T);
+    const eqTime = 4*(180/Math.PI)*(y*Math.sin(2*l0r) - 2*ecc*Math.sin(Mr)
+                   + 4*ecc*y*Math.sin(Mr)*Math.cos(2*l0r)
+                   - 0.5*y*y*Math.sin(4*l0r) - 1.25*ecc*ecc*Math.sin(2*Mr));
+    const latR   = lat * Math.PI/180;
+    const cosHA  = (Math.cos(90.833*Math.PI/180) - Math.sin(latR)*sinDec)
+                 / (Math.cos(latR)*Math.cos(dec));
+    if (cosHA > 1 || cosHA < -1) return null;
+    const HA         = Math.acos(cosHA) * 180/Math.PI;
+    const solarNoon  = 720 - 4*lon - eqTime;
+    const utcOffset  = (wxData?.utc_offset_seconds ?? 0) / 60;
+    return {
+        riseMin: solarNoon - 4*HA + utcOffset,
+        setMin:  solarNoon + 4*HA + utcOffset
+    };
+}
+
+function fmtSunTime(minutes) {
+    const total = ((minutes % 1440) + 1440) % 1440;
+    const h = Math.floor(total / 60), m = Math.round(total % 60);
+    const ampm = h < 12 ? 'AM' : 'PM';
+    const h12  = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function makeSunRow(minutes, type, cols) {
+    const tr   = document.createElement('tr');
+    tr.className = `sun-row sun-${type}`;
+    const icon  = type === 'rise' ? '<i class="bi bi-sunrise-fill"></i>' : '<i class="bi bi-sunset-fill"></i>';
+    const label = type === 'rise' ? 'Sunrise' : 'Sunset';
+    const td    = document.createElement('td');
+    td.colSpan  = cols;
+    td.innerHTML = `<div class="sun-sep">
+        <div class="sun-line"></div>
+        <span class="sun-label">${icon} ${label} ${fmtSunTime(minutes)}</span>
+        <div class="sun-line"></div>
+    </div>`;
+    tr.appendChild(td);
+    return tr;
 }
 
 // ═══════════════════════════════════════════
