@@ -529,6 +529,210 @@
         @media (max-width: 380px) {
             .col-sky { display: none; }
         }
+
+        /* ── Unit toggle ── */
+        #unit-toggle-btn {
+            background: var(--surface2); border: 1px solid var(--border);
+            color: var(--muted); padding: 4px 9px; border-radius: 6px;
+            font-size: 11px; font-weight: 600; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; white-space: nowrap;
+        }
+        #unit-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ── Help button ── */
+        #help-btn {
+            background: var(--surface2); border: 1px solid var(--border);
+            color: var(--muted); width: 27px; height: 27px; border-radius: 50%;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+        }
+        #help-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ── Generic modal overlay ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 9000;
+            background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            align-items: flex-start; justify-content: center;
+            padding: 16px 12px; overflow-y: auto;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; width: 100%; max-width: 480px;
+            box-shadow: 0 8px 40px rgba(0,0,0,.75); overflow: hidden;
+            margin: auto;
+        }
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 18px; border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; background: var(--surface); z-index: 1;
+        }
+        .modal-title { font-size: 16px; font-weight: 700; }
+        .modal-close {
+            background: none; border: none; color: var(--muted);
+            font-size: 18px; cursor: pointer; padding: 2px 6px;
+            border-radius: 4px; -webkit-tap-highlight-color: transparent; line-height: 1;
+        }
+        .modal-close:hover { color: var(--text); }
+        .modal-body { padding: 16px 18px; }
+
+        /* ── Help modal ── */
+        .help-section { margin-bottom: 22px; }
+        .help-section:last-child { margin-bottom: 4px; }
+        .help-section h3 {
+            font-size: 12px; font-weight: 700; color: var(--accent);
+            text-transform: uppercase; letter-spacing: .6px;
+            margin-bottom: 7px; display: flex; align-items: center; gap: 7px;
+        }
+        .help-section p { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 5px; }
+        .help-section p:last-child { margin-bottom: 0; }
+        .help-tag {
+            display: inline-block; font-size: 11px; font-weight: 700;
+            padding: 1px 6px; border-radius: 4px; margin: 0 2px;
+        }
+        .help-tag.exc  { background:rgba(63,185,80,.15);  color:#3fb950; }
+        .help-tag.good { background:rgba(88,166,255,.15); color:#58a6ff; }
+        .help-tag.fair { background:rgba(210,153,34,.15); color:#d29922; }
+        .help-tag.poor { background:rgba(248,81,73,.15);  color:#f85149; }
+        .help-divider { border:none; border-top:1px solid var(--border); margin: 4px 0 18px; }
+
+        /* ── Onboarding overlay ── */
+        #onboard-overlay {
+            display: none; position: fixed; inset: 0; z-index: 9500;
+            background: rgba(0,0,0,.88); backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        #onboard-overlay.open { display: flex; }
+        #onboard-box {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 18px; width: 100%; max-width: 360px;
+            padding: 30px 24px 22px; text-align: center;
+            box-shadow: 0 12px 50px rgba(0,0,0,.85);
+        }
+        .onboard-icon { font-size: 52px; margin-bottom: 14px; line-height: 1; }
+        .onboard-step-title { font-size: 20px; font-weight: 800; margin-bottom: 10px; letter-spacing: -.2px; }
+        .onboard-body { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 22px; }
+        .onboard-dots { display: flex; gap: 7px; justify-content: center; margin-bottom: 20px; }
+        .onboard-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: background .2s; }
+        .onboard-dot.active { background: var(--accent); }
+        #onboard-next-btn {
+            background: var(--accent); color: #0d1117; border: none;
+            border-radius: 10px; padding: 13px 32px; font-size: 15px;
+            font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 10px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #onboard-skip-btn {
+            font-size: 13px; color: var(--muted); cursor: pointer;
+            background: none; border: none; padding: 4px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #onboard-skip-btn:hover { color: var(--text); }
+
+        /* ── Custom name dialog ── */
+        #name-dialog-overlay {
+            display: none; position: fixed; inset: 0; z-index: 9200;
+            background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        #name-dialog-overlay.open { display: flex; }
+        #name-dialog-box {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; width: 100%; max-width: 340px;
+            padding: 20px; box-shadow: 0 8px 40px rgba(0,0,0,.75);
+        }
+        #name-dialog-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+        #name-dialog-input {
+            width: 100%; background: var(--surface2); border: 1px solid var(--border);
+            color: var(--text); padding: 10px 12px; border-radius: 8px;
+            font-size: 14px; outline: none; margin-bottom: 12px;
+            -webkit-appearance: none;
+        }
+        #name-dialog-input:focus { border-color: var(--accent); }
+        .name-dialog-btns { display: flex; gap: 8px; }
+        #name-dialog-cancel {
+            flex: 1; background: var(--surface2); border: 1px solid var(--border);
+            color: var(--text); padding: 10px; border-radius: 8px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #name-dialog-save {
+            flex: 2; background: var(--accent); color: #0d1117;
+            border: none; border-radius: 8px; padding: 10px;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── Azimuth input (in day-summary) ── */
+        #azimuth-row {
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 10px; padding-top: 10px;
+            border-top: 1px solid var(--border); flex-wrap: wrap;
+        }
+        #azimuth-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+        #azimuth-input {
+            width: 68px; background: var(--surface2); border: 1px solid var(--border);
+            color: var(--text); padding: 5px 8px; border-radius: 6px;
+            font-size: 13px; font-weight: 600; text-align: center;
+            outline: none; -webkit-appearance: none;
+        }
+        #azimuth-input:focus { border-color: var(--accent); }
+        #azimuth-hint { font-size: 11px; color: var(--accent); font-weight: 600; }
+        #azimuth-clear {
+            background: none; border: 1px solid var(--border); color: var(--muted);
+            padding: 3px 8px; border-radius: 5px; font-size: 11px; cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #azimuth-clear:hover { border-color: var(--c-severe); color: var(--c-severe); }
+
+        /* X-Wind column — only visible when azimuth is set */
+        .col-xwind { display: none; }
+        #forecast-wrap.has-azimuth .col-xwind { display: table-cell; }
+        .xw { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+        .xw-val { font-size: 13px; font-weight: 700; }
+        .xw-lbl { font-size: 9px; color: var(--muted); }
+
+        /* ── Best Windows ── */
+        #best-windows {
+            margin-top: 10px; padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+        .bw-label {
+            font-size: 11px; color: var(--muted); font-weight: 600;
+            text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px;
+        }
+        .bw-row { display: flex; flex-wrap: wrap; gap: 5px; }
+        .bw-none { font-size: 12px; color: var(--muted); font-style: italic; }
+        .bw-slot {
+            font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 10px; white-space: nowrap;
+        }
+        .bw-exc  { background:rgba(63,185,80,.15);  color:#3fb950; border:1px solid rgba(63,185,80,.3);  }
+        .bw-good { background:rgba(88,166,255,.15); color:#58a6ff; border:1px solid rgba(88,166,255,.3); }
+
+        /* ── Lunar phase ── */
+        #lunar-row {
+            margin-top: 8px; display: flex; align-items: center;
+            gap: 7px; font-size: 12px; color: var(--muted);
+        }
+        #lunar-row .lunar-emoji { font-size: 15px; line-height: 1; }
+
+        /* ── Share + Azimuth toggle row in day-summary ── */
+        .sum-actions {
+            display: flex; align-items: center; gap: 7px;
+            margin-top: 10px; padding-top: 10px;
+            border-top: 1px solid var(--border); flex-wrap: wrap;
+        }
+        .sum-action-btn {
+            background: none; border: 1px solid var(--border); color: var(--muted);
+            padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; gap: 5px;
+            -webkit-tap-highlight-color: transparent; white-space: nowrap;
+        }
+        .sum-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .sum-action-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(88,166,255,.08); }
     </style>
 </head>
 <body>
@@ -541,6 +745,9 @@
             <div class="sub">Long Range Shooting Forecast</div>
         </div>
     </div>
+    <div style="display:flex;align-items:center;gap:7px">
+        <button id="unit-toggle-btn" onclick="toggleUnits()" title="Switch between imperial and metric">mph · °F</button>
+        <button id="help-btn" onclick="openHelp()" title="Help &amp; Glossary">?</button>
     <div id="attribution-btn" onclick="toggleAttribution(event)" title="View data sources">
         Powered by<br><span>Open-Meteo</span> <i class="bi bi-info-circle"></i>
         <div id="attribution-popup">
@@ -550,7 +757,14 @@
             <div class="attr-row"><i class="bi bi-map"></i> <strong>Map:</strong> OpenStreetMap</div>
             <div class="attr-row"><i class="bi bi-satellite"></i> <strong>Satellite:</strong> Esri World Imagery</div>
             <div class="attr-row"><i class="bi bi-geo-alt"></i> <strong>Geocoding:</strong> Nominatim / OSM</div>
+            <div style="border-top:1px solid var(--border);margin:10px 0 8px"></div>
+            <div class="attr-title">About LRS Weather</div>
+            <div class="attr-row"><i class="bi bi-tag"></i> <strong>Version:</strong> 1.0.0</div>
+            <div class="attr-row"><i class="bi bi-person-circle"></i> <strong>Built for:</strong> Long-range rifle shooters</div>
+            <div class="attr-row" style="cursor:pointer" onclick="event.stopPropagation();closeAttribution();openPrivacy()"><i class="bi bi-shield-check"></i> <strong style="color:var(--accent)">Privacy Policy</strong></div>
+            <div class="attr-row" onclick="event.stopPropagation();closeAttribution();openHelp()" style="cursor:pointer"><i class="bi bi-question-circle"></i> <strong style="color:var(--accent)">Help &amp; Glossary</strong></div>
         </div>
+    </div>
     </div>
 </header>
 
@@ -659,6 +873,7 @@
                     <th>Wind 10m<br><span style="font-weight:400;letter-spacing:0">surface</span></th>
                     <th>Wind 80m<br><span style="font-weight:400;letter-spacing:0">aloft</span></th>
                     <th>Gusts</th>
+                    <th class="col-xwind">X-Wind<br><span style="font-weight:400;letter-spacing:0">H/T</span></th>
                     <th>Temp / RH<br><span style="font-weight:400;letter-spacing:0">Dew Pt</span></th>
                     <th>Pressure<br><span style="font-weight:400;letter-spacing:0">Dens Alt</span></th>
                     <th>Precip<br><span style="font-weight:400;letter-spacing:0">Prob</span></th>
@@ -668,6 +883,154 @@
             </thead>
             <tbody id="hourly-rows"></tbody>
         </table>
+    </div>
+</div>
+
+<!-- ═══════════════════ HELP MODAL ═══════════════════ -->
+<div id="help-modal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span class="modal-title"><i class="bi bi-question-circle-fill" style="color:var(--accent)"></i> &nbsp;Help &amp; Glossary</span>
+            <button class="modal-close" onclick="closeHelp()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+
+            <div class="help-section">
+                <h3><i class="bi bi-wind"></i> Wind 10m vs Wind 80m</h3>
+                <p><strong style="color:var(--text)">10m (Surface)</strong> is the wind at ground level — what you feel standing at your shooting position. This is what deflects your bullet just after it leaves the muzzle.</p>
+                <p><strong style="color:var(--text)">80m (Aloft)</strong> is the wind roughly 260 ft above ground. For long-range shots, your bullet travels through this layer for most of its flight. Surface calm with a strong 80m wind is a deceptive setup — your bullet can drift significantly even when it feels still on the ground.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-arrows-angle-expand"></i> Crosswind &amp; Headwind/Tailwind</h3>
+                <p>Set your <strong style="color:var(--text)">shooting azimuth</strong> (direction you're firing toward, in degrees) and a new column appears in the table showing the wind broken into two components:</p>
+                <p><strong style="color:var(--text)">X-Wind</strong> — the crosswind component (L or R). This is the number that matters most for horizontal bullet drift. Higher = more correction needed.</p>
+                <p><strong style="color:var(--text)">H/T</strong> — headwind (into your face) or tailwind (behind you). A headwind slightly increases bullet stability; a tailwind can reduce it. Effect is smaller than crosswind but noticeable at extreme range.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-graph-up"></i> Density Altitude</h3>
+                <p><strong style="color:var(--text)">Density Altitude (DA)</strong> is the altitude your bullet "thinks" it's flying at, based on actual air pressure and temperature. Hot, low-pressure days produce high DA — thinner air means less drag, so bullets travel flatter and hit higher than your zero. Cold, high-pressure days produce low DA — denser air means more drag.</p>
+                <p>A DA change of 3,000–5,000 ft can shift your point of impact by several inches at 1,000 yards. Always check DA vs your zero conditions before a long-range session.</p>
+                <p>Color guide: <span style="color:var(--muted)">muted = &lt;2,000ft</span> &nbsp;·&nbsp; <span style="color:var(--c-mod)">amber = 2–4K</span> &nbsp;·&nbsp; <span style="color:var(--c-strong)">orange = 4–7K</span> &nbsp;·&nbsp; <span style="color:var(--c-severe)">red = 7K+</span></p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-water"></i> Mirage Indicator</h3>
+                <p><strong style="color:var(--text)">Mirage</strong> appears when you see heat shimmer through your optic. It forms when the ground is hot, humidity is low, skies are clear, and wind is calm. While mirage can obscure your target, experienced shooters also read it to judge wind speed and direction — slow boil = calm, fast lean = stronger wind.</p>
+                <p>The app flags mirage when: temp &gt;70°F, RH &lt;40%, cloud cover &lt;20%, and wind &lt;5 mph.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-thermometer-half"></i> Dew Point</h3>
+                <p>The <strong style="color:var(--text)">dew point</strong> is the temperature at which moisture condenses. When the dew point is close to the air temperature (within ~5°F), fog, frost, or scope fogging becomes likely. A low dew point means dry, clear air. High dew point (above 65°F) means muggy conditions that can fog scopes and affect glass clarity.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-speedometer2"></i> Barometric Pressure</h3>
+                <p>Pressure directly affects air density and therefore bullet trajectory. Standard sea-level pressure is 29.92 inHg. Lower pressure = thinner air = less drag = bullets hit higher. Higher pressure = denser air = more drag = bullets hit lower. The Density Altitude number already accounts for this combined with temperature, so use DA as your ballistics input.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-star-fill"></i> Shooting Conditions Score</h3>
+                <p>Each hour is automatically rated based on wind, precipitation probability, and visibility:</p>
+                <p><span class="help-tag exc">EXCELLENT</span> Wind &lt;5 mph · Rain &lt;10% · Vis &gt;5mi</p>
+                <p><span class="help-tag good">GOOD</span> Wind &lt;10 mph · Rain &lt;25% · Vis &gt;3mi</p>
+                <p><span class="help-tag fair">FAIR</span> Wind &lt;15 mph · Rain &lt;50% · Vis &gt;1.2mi</p>
+                <p><span class="help-tag poor">POOR</span> Conditions exceed any of the above thresholds</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-moon-stars-fill"></i> Lunar Phase</h3>
+                <p>Moon phase is shown in each day's summary. For dawn/dusk shoots, a full or gibbous moon provides natural light. For night precision work, a new moon = full darkness. The illumination percentage tells you how much of the moon's face is lit.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-arrow-up-circle"></i> Wind Direction Arrows</h3>
+                <p>Arrows show the direction the wind is <strong style="color:var(--text)">traveling toward</strong> (not from). An arrow pointing right means wind is moving left-to-right across your position — which pushes your bullet to the right. The cardinal label (N, SW, etc.) and degree value show the direction the wind is <em>coming from</em> (standard meteorological convention).</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ ONBOARDING OVERLAY ═══════════════════ -->
+<div id="onboard-overlay">
+    <div id="onboard-box">
+        <div class="onboard-icon" id="onboard-icon">🎯</div>
+        <div class="onboard-step-title" id="onboard-title">Welcome to LRS Weather</div>
+        <div class="onboard-body" id="onboard-body">A precision weather tool built for long-range shooters. Every reading — wind, density altitude, mirage, crosswind — is designed to help you make better shots at distance.</div>
+        <div class="onboard-dots">
+            <div class="onboard-dot active" id="dot-0"></div>
+            <div class="onboard-dot" id="dot-1"></div>
+            <div class="onboard-dot" id="dot-2"></div>
+        </div>
+        <button id="onboard-next-btn" onclick="onboardNext()">Get Started</button>
+        <button id="onboard-skip-btn" onclick="onboardDismiss()">Skip</button>
+    </div>
+</div>
+
+<!-- ═══════════════════ NAME DIALOG ═══════════════════ -->
+<div id="name-dialog-overlay">
+    <div id="name-dialog-box">
+        <div id="name-dialog-title">Save As</div>
+        <input type="text" id="name-dialog-input" autocomplete="off" autocorrect="off" spellcheck="false">
+        <div class="name-dialog-btns">
+            <button id="name-dialog-cancel" onclick="nameDialogCancel()">Cancel</button>
+            <button id="name-dialog-save" onclick="nameDialogConfirm()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ PRIVACY POLICY MODAL ═══════════════════ -->
+<div id="privacy-modal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span class="modal-title"><i class="bi bi-shield-check" style="color:var(--accent)"></i> &nbsp;Privacy Policy</span>
+            <button class="modal-close" onclick="closePrivacy()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Last updated: March 2026</p>
+
+            <div class="help-section">
+                <h3><i class="bi bi-database"></i> Data We Collect</h3>
+                <p>LRS Weather does <strong style="color:var(--text)">not collect, transmit, or store any personal data</strong> on external servers. All data you enter — saved locations, saved forecasts, preferences — is stored exclusively on your device using your browser's local storage.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-geo-alt"></i> Location Data</h3>
+                <p>If you use the "Use My Location" feature, your coordinates are sent directly to the Open-Meteo weather API and the Nominatim geocoding service to retrieve your forecast. Your location is never stored on any LRS Weather server — we don't operate one.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-cloud-arrow-up"></i> Third-Party Services</h3>
+                <p><strong style="color:var(--text)">Open-Meteo</strong> — weather data. See their privacy policy at open-meteo.com.</p>
+                <p><strong style="color:var(--text)">OpenStreetMap / Nominatim</strong> — map tiles and geocoding. See nominatim.org for their policy.</p>
+                <p><strong style="color:var(--text)">Esri</strong> — satellite imagery layer. See esri.com/legal/privacy for their policy.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-phone"></i> Device Storage</h3>
+                <p>The app uses <strong style="color:var(--text)">localStorage</strong> on your device to remember your saved locations, saved forecasts, and settings (unit preferences, onboarding status). This data never leaves your device. You can clear it at any time through your browser or device settings.</p>
+            </div>
+            <hr class="help-divider">
+
+            <div class="help-section">
+                <h3><i class="bi bi-envelope"></i> Contact</h3>
+                <p>Questions about privacy? Open an issue at the project repository or contact the developer through the App Store listing.</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -681,6 +1044,145 @@ let wxData = null;
 let selDay = 0;
 let lastForecastDays = 7;
 let mapMarker = null;
+let useMetric = localStorage.getItem('lrs_units') === 'metric';
+let shootingAzimuth = null;
+let nameDialogCb = null;
+
+// Initialise unit button label immediately
+document.getElementById('unit-toggle-btn').textContent = useMetric ? 'km/h · °C' : 'mph · °F';
+
+// ── Unit display helpers (wxData is always imperial) ──────────
+function dWindStr(mph)  { return useMetric ? (mph * 1.60934).toFixed(0)  : mph.toFixed(0); }
+function dWindUnit()    { return useMetric ? 'km/h' : 'mph'; }
+function dTemp(f)       { return useMetric ? ((f-32)*5/9).toFixed(0)+'°C' : f.toFixed(0)+'°F'; }
+function dPressure(iHg) { return useMetric ? (iHg*33.8639).toFixed(0)+' hPa' : iHg.toFixed(2)+'"'; }
+function dElevFt(ft)    { return useMetric ? Math.round(ft*0.3048).toLocaleString()+' m' : ft.toLocaleString()+' ft'; }
+function dDA(ft)        { return useMetric ? Math.round(ft*0.3048).toLocaleString()+' m' : ft.toLocaleString()+' ft'; }
+function dVis(m)        { return useMetric ? (m/1000).toFixed(0)+' km' : (m/1609).toFixed(1)+' mi'; }
+
+function toggleUnits() {
+    useMetric = !useMetric;
+    localStorage.setItem('lrs_units', useMetric ? 'metric' : 'imperial');
+    document.getElementById('unit-toggle-btn').textContent = useMetric ? 'km/h · °C' : 'mph · °F';
+    if (wxData) {
+        const h = wxData.hourly;
+        const days = {};
+        h.time.forEach((t, i) => { const d = t.substring(0,10); (days[d]=days[d]||[]).push(i); });
+        renderDay(days, Object.keys(days).sort(), selDay);
+    }
+}
+
+// ── Lunar phase ───────────────────────────────────────────────
+function lunarPhase(date) {
+    const knownNew = new Date('2000-01-06T18:14:00Z');
+    const synodic  = 29.53058867;
+    const phase    = (((date - knownNew) / 86400000) % synodic + synodic) % synodic;
+    const illumination = Math.round((1 - Math.cos(phase / synodic * 2 * Math.PI)) / 2 * 100);
+    let name, emoji;
+    if      (phase < 1.85)  { name = 'New Moon';        emoji = '🌑'; }
+    else if (phase < 7.38)  { name = 'Waxing Crescent'; emoji = '🌒'; }
+    else if (phase < 9.22)  { name = 'First Quarter';   emoji = '🌓'; }
+    else if (phase < 14.77) { name = 'Waxing Gibbous';  emoji = '🌔'; }
+    else if (phase < 16.61) { name = 'Full Moon';       emoji = '🌕'; }
+    else if (phase < 22.15) { name = 'Waning Gibbous';  emoji = '🌖'; }
+    else if (phase < 23.99) { name = 'Last Quarter';    emoji = '🌗'; }
+    else                    { name = 'Waning Crescent'; emoji = '🌘'; }
+    return { name, emoji, illumination };
+}
+
+// ── Share day summary ─────────────────────────────────────────
+function shareDay(dk, idxs, h, dayDate) {
+    const locName = document.getElementById('loc-name').textContent;
+    const w10avg  = avg(idxs.map(i => h.wind_speed_10m[i] ?? 0));
+    const maxG    = Math.max(...idxs.map(i => h.wind_gusts_10m[i] ?? 0));
+    const tlo     = Math.min(...idxs.map(i => h.temperature_2m[i] ?? 0));
+    const thi     = Math.max(...idxs.map(i => h.temperature_2m[i] ?? 0));
+    const goodHrs = [];
+    idxs.forEach(i => {
+        const w = h.wind_speed_10m[i] ?? 0;
+        const p = h.precipitation_probability[i] ?? 0;
+        const v = h.visibility[i] ?? 10000;
+        if (w < 10 && p < 25 && v > 5000) {
+            const hr = parseInt(h.time[i].substring(11,13));
+            goodHrs.push(hr === 0 ? '12am' : hr < 12 ? `${hr}am` : hr === 12 ? '12pm' : `${hr-12}pm`);
+        }
+    });
+    const text = [
+        `🎯 LRS Weather — ${locName}`,
+        `📅 ${dayDate}`,
+        `💨 Avg Wind: ${dWindStr(w10avg)} ${dWindUnit()}  ·  Max Gust: ${dWindStr(maxG)} ${dWindUnit()}`,
+        `🌡️ Temp: ${dTemp(tlo)} – ${dTemp(thi)}`,
+        goodHrs.length ? `✅ Good windows: ${goodHrs.join(', ')}` : '⚠️ No optimal shooting windows today',
+        ``,
+        `Powered by LRS Weather`
+    ].join('\n');
+    if (navigator.share) {
+        navigator.share({ title: 'LRS Weather Forecast', text }).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('share-day-btn');
+            if (btn) { btn.innerHTML = '<i class="bi bi-check-lg"></i> Copied!'; setTimeout(() => { btn.innerHTML = '<i class="bi bi-share"></i> Share'; }, 2000); }
+        }).catch(() => alert(text));
+    }
+}
+
+// ── Custom name dialog (replaces prompt()) ────────────────────
+function showNameDialog(title, defaultVal, callback) {
+    nameDialogCb = callback;
+    document.getElementById('name-dialog-title').textContent = title;
+    const input = document.getElementById('name-dialog-input');
+    input.value = defaultVal;
+    input.placeholder = defaultVal;
+    document.getElementById('name-dialog-overlay').classList.add('open');
+    setTimeout(() => { input.focus(); input.select(); }, 60);
+}
+function nameDialogCancel()  {
+    document.getElementById('name-dialog-overlay').classList.remove('open');
+    if (nameDialogCb) { nameDialogCb(null); nameDialogCb = null; }
+}
+function nameDialogConfirm() {
+    const val = document.getElementById('name-dialog-input').value.trim();
+    document.getElementById('name-dialog-overlay').classList.remove('open');
+    if (nameDialogCb) { nameDialogCb(val || document.getElementById('name-dialog-input').placeholder); nameDialogCb = null; }
+}
+document.getElementById('name-dialog-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter')  nameDialogConfirm();
+    if (e.key === 'Escape') nameDialogCancel();
+});
+
+// ── Help / Privacy modals ─────────────────────────────────────
+function openHelp()    { document.getElementById('help-modal').classList.add('open'); }
+function closeHelp()   { document.getElementById('help-modal').classList.remove('open'); }
+function openPrivacy() { document.getElementById('privacy-modal').classList.add('open'); }
+function closePrivacy(){ document.getElementById('privacy-modal').classList.remove('open'); }
+function closeAttribution() { document.getElementById('attribution-popup').classList.remove('open'); }
+document.getElementById('help-modal').addEventListener('click',    e => { if (e.target === document.getElementById('help-modal'))    closeHelp(); });
+document.getElementById('privacy-modal').addEventListener('click', e => { if (e.target === document.getElementById('privacy-modal')) closePrivacy(); });
+
+// ── Onboarding ────────────────────────────────────────────────
+const ONBOARD_STEPS = [
+    { icon:'🎯', title:'Welcome to LRS Weather',  btn:'Next',     body:'A precision weather tool built for long-range shooters. Every reading — wind, density altitude, mirage, crosswind — is designed to help you make better shots at distance.' },
+    { icon:'📍', title:'Set Your Location',        btn:'Next',     body:'Tap anywhere on the map or search for a place. Tap the star ★ to save a location for quick access on future visits.' },
+    { icon:'🌤️', title:'Read Your Conditions',    btn:"Let's Go", body:"Choose 3, 7, or 10-day forecast. Each hour shows wind at two heights, density altitude, mirage risk, and a shooting score. Tap ? any time for the full glossary." }
+];
+let onboardStep = 0;
+function onboardNext() {
+    onboardStep++;
+    if (onboardStep >= ONBOARD_STEPS.length) { onboardDismiss(); return; }
+    const s = ONBOARD_STEPS[onboardStep];
+    document.getElementById('onboard-icon').textContent   = s.icon;
+    document.getElementById('onboard-title').textContent  = s.title;
+    document.getElementById('onboard-body').textContent   = s.body;
+    document.getElementById('onboard-next-btn').textContent = s.btn;
+    for (let i = 0; i < 3; i++) document.getElementById(`dot-${i}`).classList.toggle('active', i === onboardStep);
+}
+function onboardDismiss() {
+    document.getElementById('onboard-overlay').classList.remove('open');
+    localStorage.setItem('lrs_onboarded', '1');
+}
+if (!localStorage.getItem('lrs_onboarded')) setTimeout(() => {
+    document.getElementById('onboard-overlay').classList.add('open');
+}, 700);
 
 // ═══════════════════════════════════════════
 //  MAP
@@ -980,195 +1482,247 @@ function renderForecast() {
 }
 
 function renderDay(days, dayKeys, di) {
-    const dk = dayKeys[di];
+    const dk   = dayKeys[di];
     const idxs = days[dk];
-    const h = wxData.hourly;
+    const h    = wxData.hourly;
 
-    // ── Day Summary ──
-    const w10   = idxs.map(i => h.wind_speed_10m[i]  ?? 0);
-    const gusts = idxs.map(i => h.wind_gusts_10m[i]  ?? 0);
-    const temps = idxs.map(i => h.temperature_2m[i]  ?? 0);
+    // ── Day summary stats ──
+    const w10   = idxs.map(i => h.wind_speed_10m[i]       ?? 0);
+    const gusts = idxs.map(i => h.wind_gusts_10m[i]       ?? 0);
+    const temps = idxs.map(i => h.temperature_2m[i]       ?? 0);
     const rhs   = idxs.map(i => h.relative_humidity_2m[i] ?? 0);
+    const avgW10  = avg(w10);
+    const maxW10  = Math.max(...w10);
+    const maxGust = Math.max(...gusts);
+    const avgRH   = Math.round(avg(rhs));
+    const tempLo  = Math.min(...temps);
+    const tempHi  = Math.max(...temps);
+    const dayDate = new Date(dk+'T12:00:00').toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+    const domDir  = circularMean(idxs.map(i => h.wind_direction_10m[i] ?? 0));
 
-    const avgW10   = avg(w10).toFixed(1);
-    const maxW10   = Math.max(...w10).toFixed(0);
-    const maxGust  = Math.max(...gusts).toFixed(0);
-    const avgRH    = Math.round(avg(rhs));
-    const tempLo   = Math.min(...temps).toFixed(0);
-    const tempHi   = Math.max(...temps).toFixed(0);
-    const dayDate  = new Date(dk + 'T12:00:00').toLocaleDateString('en-US',
-        { weekday: 'long', month: 'long', day: 'numeric' });
+    // ── Lunar ──
+    const moon = lunarPhase(new Date(dk+'T12:00:00'));
 
-    // Dominant wind direction
-    const wdirs = idxs.map(i => h.wind_direction_10m[i] ?? 0);
-    const domDir = circularMean(wdirs);
+    // ── Best shooting windows ──
+    const windows = [];
+    let runStart = null, runType = null;
+    idxs.forEach((idx, pos) => {
+        const wsp = h.wind_speed_10m[idx] ?? 0;
+        const pp  = h.precipitation_probability[idx] ?? 0;
+        const vis = h.visibility[idx] ?? 10000;
+        const cond = (wsp < 5 && pp < 10 && vis > 8000) ? 'exc'
+                   : (wsp < 10 && pp < 25 && vis > 5000) ? 'good' : null;
+        if (cond === runType) { /* extend */ }
+        else {
+            if (runStart !== null && runType) windows.push({ s: runStart, e: pos-1, type: runType });
+            runStart = pos; runType = cond;
+        }
+    });
+    if (runStart !== null && runType) windows.push({ s: runStart, e: idxs.length-1, type: runType });
+
+    function fmtH(pos) {
+        const hr = parseInt(h.time[idxs[pos]].substring(11,13));
+        return hr===0?'12am':hr<12?`${hr}am`:hr===12?'12pm':`${hr-12}pm`;
+    }
+    const bwHtml = windows.length
+        ? windows.map(w => `<span class="bw-slot bw-${w.type}">${w.s===w.e?fmtH(w.s):`${fmtH(w.s)}–${fmtH(w.e)}`}</span>`).join('')
+        : '<span class="bw-none">No optimal windows today</span>';
 
     document.getElementById('day-summary').innerHTML = `
         <div class="sum-title">${dayDate}</div>
         <div class="sum-grid">
             <div class="sum-item">
-                <div class="sum-val ${wc(parseFloat(avgW10))}">${avgW10}</div>
-                <div class="sum-lbl">Avg Wind<br>mph @10m</div>
+                <div class="sum-val ${wc(avgW10)}">${dWindStr(avgW10)}</div>
+                <div class="sum-lbl">Avg Wind<br>${dWindUnit()} @10m</div>
             </div>
             <div class="sum-item">
-                <div class="sum-val ${wc(parseFloat(maxW10))}">${maxW10}</div>
-                <div class="sum-lbl">Max Wind<br>mph @10m</div>
+                <div class="sum-val ${wc(maxW10)}">${dWindStr(maxW10)}</div>
+                <div class="sum-lbl">Max Wind<br>${dWindUnit()} @10m</div>
             </div>
             <div class="sum-item">
-                <div class="sum-val ${wc(parseFloat(maxGust))}">${maxGust}</div>
-                <div class="sum-lbl">Max Gust<br>mph</div>
+                <div class="sum-val ${wc(maxGust)}">${dWindStr(maxGust)}</div>
+                <div class="sum-lbl">Max Gust<br>${dWindUnit()}</div>
             </div>
             <div class="sum-item">
-                <div class="sum-val">${tempLo}°–${tempHi}°</div>
+                <div class="sum-val">${dTemp(tempLo)}–${dTemp(tempHi)}</div>
                 <div class="sum-lbl">Temp Range<br>${avgRH}% avg RH</div>
             </div>
         </div>
         <div style="margin-top:10px;font-size:12px;color:var(--muted)">
             Dominant wind: <strong style="color:var(--text)">${degToCard(domDir)} (${Math.round(domDir)}°)</strong>
-            &nbsp;·&nbsp; Elev: <strong style="color:var(--accent)">${Math.round(selElev * 3.28084).toLocaleString()} ft</strong>
+            &nbsp;·&nbsp; Elev: <strong style="color:var(--accent)">${dElevFt(Math.round(selElev*3.28084))}</strong>
+        </div>
+        <div id="lunar-row">
+            <span class="lunar-emoji">${moon.emoji}</span>
+            <span>${moon.name} &nbsp;·&nbsp; <strong style="color:var(--text)">${moon.illumination}%</strong> illuminated</span>
+        </div>
+        <div id="best-windows">
+            <div class="bw-label"><i class="bi bi-crosshair2"></i> Best Shooting Windows</div>
+            <div class="bw-row">${bwHtml}</div>
+        </div>
+        <div class="sum-actions">
+            <button class="sum-action-btn ${shootingAzimuth!==null?'active':''}" id="azimuth-toggle-btn">
+                <i class="bi bi-compass"></i> ${shootingAzimuth!==null?`Azimuth: ${shootingAzimuth}°`:'Set Azimuth'}
+            </button>
+            <button class="sum-action-btn" id="share-day-btn">
+                <i class="bi bi-share"></i> Share
+            </button>
+        </div>
+        <div id="azimuth-row" style="display:${shootingAzimuth!==null?'flex':'none'};align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap;">
+            <span style="font-size:12px;color:var(--muted);white-space:nowrap;">Shooting azimuth:</span>
+            <input type="number" id="azimuth-input" min="0" max="359"
+                ${shootingAzimuth!==null?`value="${shootingAzimuth}"`:'placeholder="0–359°"'}
+                style="width:68px;background:var(--surface2);border:1px solid ${shootingAzimuth!==null?'var(--accent)':'var(--border)'};color:var(--text);padding:5px 8px;border-radius:6px;font-size:13px;font-weight:600;text-align:center;outline:none;-webkit-appearance:none;">
+            <span id="azimuth-hint" style="font-size:11px;font-weight:600;color:${shootingAzimuth!==null?'var(--accent)':'var(--muted)'};">
+                ${shootingAzimuth!==null?`${degToCard(shootingAzimuth)} ${shootingAzimuth}°`:'Enter bearing to target'}
+            </span>
+            ${shootingAzimuth!==null?`<button id="azimuth-clear" style="background:none;border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:5px;font-size:11px;cursor:pointer;">Clear</button>`:''}
         </div>
     `;
 
-    // ── Hourly Rows ──
+    // Attach azimuth events
+    const azInput = document.getElementById('azimuth-input');
+    if (azInput) {
+        azInput.addEventListener('input', () => {
+            const v = parseInt(azInput.value);
+            if (!isNaN(v) && v >= 0 && v <= 359) {
+                document.getElementById('azimuth-hint').textContent = `${degToCard(v)} ${v}°`;
+                document.getElementById('azimuth-hint').style.color = 'var(--accent)';
+            }
+        });
+        azInput.addEventListener('change', () => {
+            const v = parseInt(azInput.value);
+            if (!isNaN(v) && v >= 0 && v <= 359) {
+                shootingAzimuth = v;
+                renderDay(days, dayKeys, di);
+            }
+        });
+    }
+    document.getElementById('azimuth-toggle-btn').addEventListener('click', () => {
+        const row = document.getElementById('azimuth-row');
+        const visible = row.style.display !== 'none';
+        row.style.display = visible ? 'none' : 'flex';
+        if (!visible) document.getElementById('azimuth-input').focus();
+    });
+    const azClearBtn = document.getElementById('azimuth-clear');
+    if (azClearBtn) azClearBtn.addEventListener('click', () => { shootingAzimuth = null; renderDay(days, dayKeys, di); });
+    document.getElementById('share-day-btn').addEventListener('click', () => shareDay(dk, idxs, h, dayDate));
+
+    // ── Hourly rows ──
     const tbody = document.getElementById('hourly-rows');
     tbody.innerHTML = '';
+    const fWrap = document.getElementById('forecast-wrap');
+    shootingAzimuth !== null ? fWrap.classList.add('has-azimuth') : fWrap.classList.remove('has-azimuth');
 
     idxs.forEach(i => {
-        const timeStr = h.time[i];
-        const hour    = parseInt(timeStr.substring(11, 13));
+        const hour   = parseInt(h.time[i].substring(11,13));
+        const wind10 = h.wind_speed_10m[i]            ?? 0;
+        const wind80 = h.wind_speed_80m[i]            ?? 0;
+        const gust   = h.wind_gusts_10m[i]            ?? 0;
+        const wdir10 = h.wind_direction_10m[i]        ?? 0;
+        const wdir80 = h.wind_direction_80m[i]        ?? 0;
+        const temp   = h.temperature_2m[i]            ?? 0;
+        const rh     = h.relative_humidity_2m[i]      ?? 0;
+        const dp     = h.dew_point_2m[i]              ?? 0;
+        const pHpa   = h.surface_pressure[i]          ?? 1013.25;
+        const cloud  = h.cloud_cover[i]               ?? 0;
+        const pprob  = h.precipitation_probability[i] ?? 0;
+        const vis_m  = h.visibility[i]                ?? 10000;
 
-        const wind10  = h.wind_speed_10m[i]       ?? 0;
-        const wind80  = h.wind_speed_80m[i]        ?? 0;
-        const gust    = h.wind_gusts_10m[i]        ?? 0;
-        const wdir10  = h.wind_direction_10m[i]    ?? 0;
-        const wdir80  = h.wind_direction_80m[i]    ?? 0;
-        const temp    = h.temperature_2m[i]        ?? 0;
-        const rh      = h.relative_humidity_2m[i]  ?? 0;
-        const dp      = h.dew_point_2m[i]          ?? 0;
-        const pHpa    = h.surface_pressure[i]      ?? 1013.25;
-        const cloud   = h.cloud_cover[i]           ?? 0;
-        const pprob   = h.precipitation_probability[i] ?? 0;
-        const vis_m   = h.visibility[i]            ?? 10000;
-
-        // ── Density Altitude ──
         const pInHg = pHpa * 0.02953;
         const tempC = (temp - 32) * 5 / 9;
-        // Pressure altitude (ft)
-        const pa = 145442.2 * (1 - Math.pow(pInHg / 29.92126, 0.190261));
-        // ISA temp at pressure altitude
-        const isaT = 15 - (0.001989 * pa);
-        const da = Math.round(pa + 118.8 * (tempC - isaT));
-        const daStr = (da >= 0 ? '+' : '') + da.toLocaleString() + ' ft';
+        const pa    = 145442.2 * (1 - Math.pow(pInHg / 29.92126, 0.190261));
+        const isaT  = 15 - (0.001989 * pa);
+        const da    = Math.round(pa + 118.8 * (tempC - isaT));
 
-        // ── Mirage ──
-        // Mirage likely when temp high, RH low, cloud cover low, no wind or light wind
-        const mirageScore = (temp > 70 ? 1 : 0) + (rh < 40 ? 1 : 0) + (cloud < 20 ? 1 : 0) + (wind10 < 5 ? 1 : 0);
-        const mirageStr = mirageScore >= 3 ? '〰 Mirage' : '';
+        const mirageScore = (temp>70?1:0)+(rh<40?1:0)+(cloud<20?1:0)+(wind10<5?1:0);
 
-        // ── Shooting conditions ──
         let condCls, condTxt;
-        if (wind10 < 5  && pprob < 10 && vis_m > 8000) { condCls = 'cond-exc';  condTxt = 'EXCELLENT'; }
-        else if (wind10 < 10 && pprob < 25 && vis_m > 5000) { condCls = 'cond-good'; condTxt = 'GOOD'; }
-        else if (wind10 < 15 && pprob < 50 && vis_m > 2000) { condCls = 'cond-fair'; condTxt = 'FAIR'; }
-        else { condCls = 'cond-poor'; condTxt = 'POOR'; }
+        if      (wind10<5  && pprob<10 && vis_m>8000) { condCls='cond-exc';  condTxt='EXCELLENT'; }
+        else if (wind10<10 && pprob<25 && vis_m>5000) { condCls='cond-good'; condTxt='GOOD'; }
+        else if (wind10<15 && pprob<50 && vis_m>2000) { condCls='cond-fair'; condTxt='FAIR'; }
+        else                                           { condCls='cond-poor'; condTxt='POOR'; }
 
-        // ── Time formatting ──
         let hLabel, ampm;
-        if (hour === 0)       { hLabel = '12'; ampm = 'AM'; }
-        else if (hour < 12)   { hLabel = `${hour}`;      ampm = 'AM'; }
-        else if (hour === 12) { hLabel = '12'; ampm = 'PM'; }
-        else                  { hLabel = `${hour - 12}`; ampm = 'PM'; }
+        if      (hour===0)  { hLabel='12'; ampm='AM'; }
+        else if (hour<12)   { hLabel=`${hour}`; ampm='AM'; }
+        else if (hour===12) { hLabel='12'; ampm='PM'; }
+        else                { hLabel=`${hour-12}`; ampm='PM'; }
 
-        const isDawn = hour >= 5 && hour <= 7;
-        const isDusk = hour >= 19 && hour <= 21;
-        const isNight = hour < 5 || hour > 21;
-        let timeClass = isDawn ? 't-dawn' : isDusk ? 't-dusk' : '';
+        const isDawn  = hour>=5  && hour<=7;
+        const isDusk  = hour>=19 && hour<=21;
+        const isNight = hour<5   || hour>21;
+        const tClass  = isDawn ? 't-dawn' : isDusk ? 't-dusk' : '';
 
-        // ── Visibility ──
-        const vis_km = (vis_m / 1000).toFixed(0);
-        const vis_mi = (vis_m / 1609).toFixed(1);
+        const arrow10rot  = (wdir10+180)%360;
+        const arrow80rot  = (wdir80+180)%360;
+        const tempColor   = temp<20?'var(--c-light)':temp>95?'var(--c-severe)':'var(--text)';
+        const daColor     = da>7000?'var(--c-severe)':da>4000?'var(--c-strong)':da>2000?'var(--c-mod)':'var(--muted)';
+        const daSign      = da>=0?'+':'';
 
-        // ── Arrow rotation ──
-        // Wind direction = FROM direction (met convention). Arrow shows where wind GOES.
-        // Arrow "↑" pointing up (north). Rotate by (wdir + 180) to point travel direction.
-        const arrow10rot = (wdir10 + 180) % 360;
-        const arrow80rot = (wdir80 + 180) % 360;
-
-        // ── Temp color ──
-        const tempColor = temp < 20 ? 'var(--c-light)' : temp > 95 ? 'var(--c-severe)' : 'var(--text)';
-
-        // ── DA color ──
-        const daColor = da > 7000 ? 'var(--c-severe)' : da > 4000 ? 'var(--c-strong)' : da > 2000 ? 'var(--c-mod)' : 'var(--muted)';
+        // X-Wind / Headwind
+        let xwindCell = '<td class="col-xwind"></td>';
+        if (shootingAzimuth !== null) {
+            const rel  = ((wdir10+180) - shootingAzimuth + 360) % 360;
+            const relR = rel * Math.PI / 180;
+            const xw   = wind10 * Math.sin(relR);
+            const hw   = wind10 * Math.cos(relR);
+            const xwDir   = xw >  0.5 ? 'L→R' : xw < -0.5 ? 'R→L' : '—';
+            const hwLabel = Math.abs(hw) < 0.5 ? '—' : (hw > 0 ? `↑ ${dWindStr(Math.abs(hw))}` : `↓ ${dWindStr(Math.abs(hw))}`);
+            const xwColor = Math.abs(xw)>15?'var(--c-severe)':Math.abs(xw)>8?'var(--c-strong)':Math.abs(xw)>3?'var(--c-mod)':'var(--text)';
+            xwindCell = `<td class="col-xwind"><div class="xw">
+                <span class="xw-val" style="color:${xwColor}">${dWindStr(Math.abs(xw))}</span>
+                <span class="xw-lbl">${xwDir}</span>
+                <span class="xw-lbl">${hwLabel}</span>
+            </div></td>`;
+        }
 
         const tr = document.createElement('tr');
-        if (hour >= 7 && hour <= 18) tr.classList.add('daytime');
-
+        if (hour>=7 && hour<=18) tr.classList.add('daytime');
         tr.innerHTML = `
             <td>
-                <div class="t-time ${timeClass}">${hLabel}<span class="t-ampm">${ampm}</span></div>
-                ${isNight  ? '<span class="t-night"><i class="bi bi-moon-stars-fill" style="color:#6e7681"></i> night</span>' : ''}
-                ${isDawn   ? '<span class="t-night" style="color:#e3b341"><i class="bi bi-sunrise" style="color:#e3b341"></i> dawn</span>' : ''}
-                ${isDusk   ? '<span class="t-night" style="color:#db6d28"><i class="bi bi-sunset" style="color:#db6d28"></i> dusk</span>' : ''}
+                <div class="t-time ${tClass}">${hLabel}<span class="t-ampm">${ampm}</span></div>
+                ${isNight?'<span class="t-night"><i class="bi bi-moon-stars-fill" style="color:#6e7681"></i> night</span>':''}
+                ${isDawn ?'<span class="t-night" style="color:#e3b341"><i class="bi bi-sunrise" style="color:#e3b341"></i> dawn</span>':''}
+                ${isDusk ?'<span class="t-night" style="color:#db6d28"><i class="bi bi-sunset" style="color:#db6d28"></i> dusk</span>':''}
             </td>
-
-            <td>
-                <div class="wc">
-                    <span class="wc-speed ${wc(wind10)}">${wind10.toFixed(0)}</span>
-                    <span class="wc-arrow" style="transform:rotate(${arrow10rot}deg)" title="${wdir10}° ${degToCard(wdir10)}">&#8593;</span>
-                    <span class="wc-dir">${degToCard(wdir10)} ${wdir10}°</span>
-                </div>
-            </td>
-
-            <td>
-                <div class="wc">
-                    <span class="wc-speed ${wc(wind80)}">${wind80.toFixed(0)}</span>
-                    <span class="wc-arrow" style="transform:rotate(${arrow80rot}deg)" title="${wdir80}° ${degToCard(wdir80)}">&#8593;</span>
-                    <span class="wc-dir">${degToCard(wdir80)} ${wdir80}°</span>
-                </div>
-            </td>
-
-            <td>
-                <div class="gc">
-                    <span class="gc-speed ${wc(gust)}">${gust.toFixed(0)}</span>
-                    <span class="gc-lbl">mph</span>
-                    ${gust > 20 ? `<span style="font-size:11px;color:var(--c-severe)"><i class="bi bi-exclamation-triangle-fill"></i></span>` : ''}
-                </div>
-            </td>
-
-            <td>
-                <div class="thc">
-                    <span class="thc-temp" style="color:${tempColor}">${temp.toFixed(0)}°F</span>
-                    <span class="thc-rh">${rh}% RH</span>
-                    <span class="thc-dp">DP ${dp.toFixed(0)}°F</span>
-                    ${mirageStr ? `<span class="mirage">${mirageStr}</span>` : ''}
-                </div>
-            </td>
-
-            <td>
-                <div class="pdc">
-                    <span class="pdc-p">${pInHg.toFixed(2)}&quot;</span>
-                    <span class="pdc-da" style="color:${daColor}">${daStr}</span>
-                </div>
-            </td>
-
-            <td>
-                <div class="pc">
-                    <span class="pc-val" style="color:${pprob > 50 ? 'var(--c-light)' : pprob > 75 ? 'var(--c-severe)' : 'var(--text)'}">${pprob}%</span>
-                    <div class="pbar"><div class="pbar-fill" style="width:${pprob}%"></div></div>
-                </div>
-            </td>
-
-            <td class="col-sky">
-                <div class="sc">
-                    <span class="sc-icon">${skyIcon(cloud)}</span>
-                    <span class="sc-cld">${cloud}%</span>
-                    <span class="sc-vis">${vis_mi}mi</span>
-                </div>
-            </td>
-
+            <td><div class="wc">
+                <span class="wc-speed ${wc(wind10)}">${dWindStr(wind10)}</span>
+                <span class="wc-arrow" style="transform:rotate(${arrow10rot}deg)" title="${wdir10}° ${degToCard(wdir10)}">&#8593;</span>
+                <span class="wc-dir">${degToCard(wdir10)} ${wdir10}°</span>
+            </div></td>
+            <td><div class="wc">
+                <span class="wc-speed ${wc(wind80)}">${dWindStr(wind80)}</span>
+                <span class="wc-arrow" style="transform:rotate(${arrow80rot}deg)" title="${wdir80}° ${degToCard(wdir80)}">&#8593;</span>
+                <span class="wc-dir">${degToCard(wdir80)} ${wdir80}°</span>
+            </div></td>
+            <td><div class="gc">
+                <span class="gc-speed ${wc(gust)}">${dWindStr(gust)}</span>
+                <span class="gc-lbl">${dWindUnit()}</span>
+                ${gust>20?'<span style="font-size:11px;color:var(--c-severe)"><i class="bi bi-exclamation-triangle-fill"></i></span>':''}
+            </div></td>
+            ${xwindCell}
+            <td><div class="thc">
+                <span class="thc-temp" style="color:${tempColor}">${dTemp(temp)}</span>
+                <span class="thc-rh">${rh}% RH</span>
+                <span class="thc-dp">DP ${dTemp(dp)}</span>
+                ${mirageScore>=3?'<span class="mirage">〰 Mirage</span>':''}
+            </div></td>
+            <td><div class="pdc">
+                <span class="pdc-p">${dPressure(pInHg)}</span>
+                <span class="pdc-da" style="color:${daColor}">${daSign}${dDA(da)} DA</span>
+            </div></td>
+            <td><div class="pc">
+                <span class="pc-val" style="color:${pprob>75?'var(--c-severe)':pprob>50?'var(--c-light)':'var(--text)'}">${pprob}%</span>
+                <div class="pbar"><div class="pbar-fill" style="width:${pprob}%"></div></div>
+            </div></td>
+            <td class="col-sky"><div class="sc">
+                <span class="sc-icon">${skyIcon(cloud)}</span>
+                <span class="sc-cld">${cloud}%</span>
+                <span class="sc-vis">${dVis(vis_m)}</span>
+            </div></td>
             <td><span class="${condCls}">${condTxt}</span></td>
         `;
-
         tbody.appendChild(tr);
     });
 }
@@ -1289,27 +1843,19 @@ function deleteSaved(idx) {
 function saveCurrentLocation() {
     if (!selLat) return;
     const currentName = document.getElementById('loc-name').textContent;
-    const name = prompt('Save location as:', currentName);
-    if (name === null) return; // cancelled
-    const trimmed = name.trim() || currentName;
-
-    const list = loadSaved();
-    // Avoid exact-duplicate coords
-    const exists = list.findIndex(l => Math.abs(l.lat - selLat) < 0.0001 && Math.abs(l.lon - selLon) < 0.0001);
-    if (exists >= 0) {
-        list[exists].name = trimmed; // rename if same spot
-    } else {
-        list.push({ name: trimmed, lat: selLat, lon: selLon, elev: selElev });
-    }
-    persistSaved(list);
-    renderSavedList();
-    updateSaveBtn();
-
-    // Open the panel so user sees it was saved
-    const toggle = document.getElementById('saved-toggle');
-    const savedList = document.getElementById('saved-list');
-    toggle.classList.add('open');
-    savedList.classList.add('open');
+    showNameDialog('Save location as:', currentName, name => {
+        if (name === null) return;
+        const trimmed = name.trim() || currentName;
+        const list = loadSaved();
+        const exists = list.findIndex(l => Math.abs(l.lat-selLat)<0.0001 && Math.abs(l.lon-selLon)<0.0001);
+        if (exists >= 0) { list[exists].name = trimmed; }
+        else             { list.push({ name: trimmed, lat: selLat, lon: selLon, elev: selElev }); }
+        persistSaved(list);
+        renderSavedList();
+        updateSaveBtn();
+        document.getElementById('saved-toggle').classList.add('open');
+        document.getElementById('saved-list').classList.add('open');
+    });
 }
 
 function updateSaveBtn() {
@@ -1409,34 +1955,33 @@ function persistForecasts(list) {
 
 function saveCurrentForecast() {
     if (!wxData || !selLat) return;
-    const locName  = document.getElementById('loc-name').textContent || 'Unknown';
-    const numDays  = new Set(wxData.hourly.time.map(t => t.substring(0, 10))).size;
+    const locName   = document.getElementById('loc-name').textContent || 'Unknown';
+    const numDays   = new Set(wxData.hourly.time.map(t => t.substring(0,10))).size;
     const startDate = document.getElementById('start-date').value || todayISO();
     const defaultName = `${locName} — ${numDays}-Day (${startDate})`;
-    const name = prompt('Save forecast as:', defaultName);
-    if (name === null) return;
-
-    const list = getSavedForecasts();
-    list.unshift({
-        id: Date.now(),
-        name: name.trim() || defaultName,
-        location: { lat: selLat, lon: selLon, name: locName, elev: selElev },
-        startDate, days: lastForecastDays,
-        savedAt: new Date().toISOString(),
-        wxData
+    showNameDialog('Save forecast as:', defaultName, name => {
+        if (name === null) return;
+        const list = getSavedForecasts();
+        list.unshift({
+            id: Date.now(),
+            name: name.trim() || defaultName,
+            location: { lat: selLat, lon: selLon, name: locName, elev: selElev },
+            startDate, days: lastForecastDays,
+            savedAt: new Date().toISOString(),
+            wxData
+        });
+        if (list.length > 10) list.length = 10;
+        persistForecasts(list);
+        renderSavedForecasts();
+        const btn = document.getElementById('save-forecast-btn');
+        btn.innerHTML = '<i class="bi bi-check-lg"></i> Saved!';
+        btn.style.cssText += 'border-color:#3fb950;color:#3fb950';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="bi bi-floppy"></i> Save Forecast';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+        }, 2000);
     });
-    if (list.length > 10) list.length = 10;
-    persistForecasts(list);
-    renderSavedForecasts();
-
-    const btn = document.getElementById('save-forecast-btn');
-    btn.innerHTML = '<i class="bi bi-check-lg"></i> Saved!';
-    btn.style.cssText += 'border-color:#3fb950;color:#3fb950';
-    setTimeout(() => {
-        btn.innerHTML = '<i class="bi bi-floppy"></i> Save Forecast';
-        btn.style.borderColor = '';
-        btn.style.color = '';
-    }, 2000);
 }
 
 function loadSavedForecast(fc) {
