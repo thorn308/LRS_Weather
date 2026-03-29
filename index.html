@@ -316,7 +316,7 @@
         #attribution-btn {
             font-size: 11px; color: var(--muted); text-align: right;
             cursor: pointer; position: relative; user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent; white-space: nowrap;
         }
         #attribution-btn:hover { color: var(--accent); }
         #attribution-btn span { color: var(--accent); }
@@ -754,18 +754,20 @@
 <body>
 
 <header>
-    <div style="display:flex;align-items:center;gap:10px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
         <img src="apple-touch-icon.png" style="width:44px;height:44px;border-radius:9px;flex-shrink:0">
-        <div>
+        <div style="min-width:0;overflow:hidden">
             <h1>LRS Weather</h1>
             <div class="sub">Long Range Shooting Forecast</div>
         </div>
     </div>
-    <div style="display:flex;align-items:center;gap:7px">
-        <button id="unit-toggle-btn" onclick="toggleUnits()" title="Switch between imperial and metric">mph · °F</button>
-        <button id="help-btn" onclick="openHelp()" title="Help &amp; Glossary">?</button>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;margin-left:8px">
+        <div style="display:flex;align-items:center;gap:7px">
+            <button id="unit-toggle-btn" onclick="toggleUnits()" title="Switch between imperial and metric">mph · °F</button>
+            <button id="help-btn" onclick="openHelp()" title="Help &amp; Glossary">?</button>
+        </div>
     <div id="attribution-btn" onclick="toggleAttribution(event)" title="View data sources">
-        Powered by<br><span>Open-Meteo</span> <i class="bi bi-info-circle"></i>
+        Powered by <span>Open-Meteo</span> <i class="bi bi-info-circle"></i>
         <div id="attribution-popup">
             <div class="attr-title">Data Sources</div>
             <div class="attr-row"><i class="bi bi-cloud-sun-fill"></i> <strong>Weather:</strong> Open-Meteo</div>
