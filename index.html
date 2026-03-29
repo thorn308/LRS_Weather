@@ -155,17 +155,13 @@
         }
         #fetch-btn, #fetch-3-btn, #fetch-10-btn {
             flex: 1;
-            border: none; padding: 13px 4px; border-radius: 10px;
-            font-size: 14px; font-weight: 700; cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            transition: opacity .15s; text-align: center;
-        }
-        #fetch-btn {
-            background: var(--accent); color: #0d1117;
-        }
-        #fetch-3-btn, #fetch-10-btn {
             background: var(--surface2); color: var(--accent);
             border: 1.5px solid var(--accent);
+            padding: 8px 4px; border-radius: 10px;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: opacity .15s; text-align: center;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         #fetch-btn:disabled, #fetch-3-btn:disabled, #fetch-10-btn:disabled { opacity: .45; cursor: default; }
 
@@ -850,9 +846,9 @@
 </div>
 
 <div id="btn-row">
-    <button id="fetch-3-btn" disabled>Get 3-Day Forecast</button>
-    <button id="fetch-btn" disabled>Get 7-Day Forecast</button>
-    <button id="fetch-10-btn" disabled>Get 10-Day Forecast</button>
+    <button id="fetch-3-btn" disabled>3-Day Forecast</button>
+    <button id="fetch-btn" disabled>7-Day Forecast</button>
+    <button id="fetch-10-btn" disabled>10-Day Forecast</button>
 </div>
 
 <div id="loading">
@@ -2010,9 +2006,9 @@ function todayISO() {
         const today = todayISO();
         if (!val || val === today) {
             hint.textContent = 'Today';
-            if (!btn3.disabled)  btn3.textContent  = 'Get 3-Day Forecast';
-            if (!btn7.disabled)  btn7.textContent  = 'Get 7-Day Forecast';
-            if (!btn10.disabled) btn10.textContent = 'Get 10-Day Forecast';
+            if (!btn3.disabled)  btn3.textContent  = '3-Day Forecast';
+            if (!btn7.disabled)  btn7.textContent  = '7-Day Forecast';
+            if (!btn10.disabled) btn10.textContent = '10-Day Forecast';
             return;
         }
         const diffMs   = new Date(val + 'T00:00:00') - new Date(today + 'T00:00:00');
@@ -2020,10 +2016,10 @@ function todayISO() {
         hint.textContent = `+${diffDays} day${diffDays !== 1 ? 's' : ''}`;
 
         const label = new Date(val + 'T12:00:00')
-            .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        if (!btn3.disabled)  btn3.textContent  = `3-Day from ${label}`;
-        if (!btn7.disabled)  btn7.textContent  = `7-Day from ${label}`;
-        if (!btn10.disabled) btn10.textContent = `10-Day from ${label}`;
+            .toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        if (!btn3.disabled)  btn3.textContent  = `3-Day · ${label}`;
+        if (!btn7.disabled)  btn7.textContent  = `7-Day · ${label}`;
+        if (!btn10.disabled) btn10.textContent = `10-Day · ${label}`;
     });
 })();
 
