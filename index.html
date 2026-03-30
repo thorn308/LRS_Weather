@@ -532,11 +532,12 @@
         .sun-row td {
             padding: 4px 8px; border-bottom: none !important;
         }
-        .sun-row:hover { background: none !important; }
+        .sun-row { cursor: pointer; }
+        .sun-row:hover .sun-sep { opacity: 0.75; }
         .sun-sep {
             display: flex; align-items: center; gap: 8px;
             font-size: 10px; font-weight: 700; letter-spacing: .4px;
-            white-space: nowrap;
+            white-space: nowrap; transition: opacity .15s;
         }
         .sun-line {
             flex: 1; height: 1px;
@@ -545,6 +546,10 @@
         .sun-rise .sun-label { color: #f5c842; }
         .sun-set  .sun-line { background: linear-gradient(90deg, transparent, #db6d28 40%, transparent); }
         .sun-set  .sun-label { color: #db6d28; }
+        .sun-collapse-icon {
+            display: inline-block; transition: transform .2s; opacity: 0.8; font-size: 9px;
+        }
+        .sun-row.sun-collapsed .sun-collapse-icon { transform: rotate(180deg); }
 
         /* ── Unit toggle ── */
         #unit-toggle-btn {
@@ -1848,17 +1853,30 @@ function fmtSunTime(minutes) {
 function makeSunRow(minutes, type, cols) {
     const tr   = document.createElement('tr');
     tr.className = `sun-row sun-${type}`;
-    const icon  = type === 'rise' ? '<i class="bi bi-sunrise-fill"></i>' : '<i class="bi bi-sunset-fill"></i>';
-    const label = type === 'rise' ? 'Sunrise' : 'Sunset';
+    const icon    = type === 'rise' ? '<i class="bi bi-sunrise-fill"></i>' : '<i class="bi bi-sunset-fill"></i>';
+    const label   = type === 'rise' ? 'Sunrise' : 'Sunset';
+    const chevron = type === 'rise'
+        ? '<span class="sun-collapse-icon"><i class="bi bi-chevron-up"></i></span>'
+        : '<span class="sun-collapse-icon"><i class="bi bi-chevron-down"></i></span>';
     const td    = document.createElement('td');
     td.colSpan  = cols;
     td.innerHTML = `<div class="sun-sep">
         <div class="sun-line"></div>
-        <span class="sun-label">${icon} ${label} ${fmtSunTime(minutes)}</span>
+        <span class="sun-label">${chevron} ${icon} ${label} ${fmtSunTime(minutes)}</span>
         <div class="sun-line"></div>
     </div>`;
     tr.appendChild(td);
+    tr.addEventListener('click', () => toggleSunCollapse(tr, type));
     return tr;
+}
+
+function toggleSunCollapse(sunTr, type) {
+    const tbody = sunTr.closest('tbody');
+    const rows  = Array.from(tbody.querySelectorAll('tr'));
+    const idx   = rows.indexOf(sunTr);
+    const isCollapsed = sunTr.classList.toggle('sun-collapsed');
+    const targets = type === 'rise' ? rows.slice(0, idx) : rows.slice(idx + 1);
+    targets.forEach(r => { r.style.display = isCollapsed ? 'none' : ''; });
 }
 
 // ═══════════════════════════════════════════
